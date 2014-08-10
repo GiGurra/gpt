@@ -1,0 +1,19 @@
+<Module>
+    <Enums> </Enums>
+    <Types>
+        <StreamReceiverCfg>
+            <displays type="list[StreamDisplay]"/>
+        </StreamReceiverCfg>
+        <StreamDisplay>
+            <active type="bool"/>
+            <source type="StreamPosition"/>
+            <target type="StreamPosition"/>
+        </StreamDisplay>
+        <StreamPosition>
+            <x type="float64"/>
+            <y type="float64"/>
+            <width type="float64"/>
+            <height type="float64"/>
+        </StreamPosition>
+    </Types>
+</Module>

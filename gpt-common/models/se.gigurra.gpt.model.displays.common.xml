@@ -1,0 +1,11 @@
+<Module>
+    <Enums> </Enums>
+    <Types>
+        <StreamMsg>
+            <frameNbr type="int32"/>
+            <width type="int32"/>
+            <height type="int32"/>
+            <data type="array[int8]"/>
+        </StreamMsg>
+    </Types>
+</Module>

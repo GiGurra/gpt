@@ -1,0 +1,9 @@
+<Module>
+    <Enums> </Enums>
+    <Types>
+        <NetworkTarget>
+            <ip type="string"/>
+            <port type="int32"/>
+        </NetworkTarget>
+    </Types>
+</Module>

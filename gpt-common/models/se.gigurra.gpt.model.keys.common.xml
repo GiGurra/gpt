@@ -1,0 +1,10 @@
+<Module>
+    <Enums> </Enums>
+    <Types>
+        <KeyMessage>
+            <value type="int32"/>
+            <modifiers type="int32"/>
+            <extra type="int32"/>
+        </KeyMessage>
+    </Types>
+</Module>

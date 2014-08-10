@@ -26,4 +26,3 @@ call:process_subdir gpt-keyreceiver %1
 call:process_subdir gpt-keytransmitter %1
 call:process_subdir gpt-shmreceiver %1
 call:process_subdir gpt-shmtransmitter %1
-call:process_subdir gpt-windowsontop %1

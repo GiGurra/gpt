@@ -1,0 +1,25 @@
+<Project>
+    <Generator name="Java">
+        <class_path>se.culvertsoft.mgen.javapack.generator.JavaGenerator</class_path>
+        <output_path>src_generated/main/java</output_path>
+        <classregistry_path>se.gigurra.gpt.model</classregistry_path>
+    </Generator>
+    <Generator name="C++">
+		<generate_unity_build>true</generate_unity_build>
+        <class_path>se.culvertsoft.mgen.cpppack.generator.CppGenerator</class_path>
+        <output_path>src_generated/main/cpp</output_path>
+        <classregistry_path>se.gigurra.gpt.model</classregistry_path>
+    </Generator>
+    <Sources>
+        <Source>se.gigurra.gpt.model.common.xml</Source>
+        <Source>se.gigurra.gpt.model.displays.common.xml</Source>
+        <Source>se.gigurra.gpt.model.displays.receiver.xml</Source>
+        <Source>se.gigurra.gpt.model.displays.transmitter.xml</Source>
+        <Source>se.gigurra.gpt.model.keys.common.xml</Source>
+        <Source>se.gigurra.gpt.model.keys.receiver.xml</Source>
+        <Source>se.gigurra.gpt.model.keys.transmitter.xml</Source>
+        <Source>se.gigurra.gpt.model.shm.common.xml</Source>
+        <Source>se.gigurra.gpt.model.shm.receiver.xml</Source>
+        <Source>se.gigurra.gpt.model.shm.transmitter.xml</Source>
+    </Sources>
+</Project>
