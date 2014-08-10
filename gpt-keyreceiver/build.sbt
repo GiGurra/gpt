@@ -1,7 +1,7 @@
 
 // Remember, sbt needs empty lines between active settings
 
-name := "gpt-common"
+name := "gpt-keyreceiver"
 
 organization := "se.gigurra"
 
@@ -11,14 +11,8 @@ isSnapshot := version.value.contains("SNAPSHOT")
 
 crossPaths := false
 
-libraryDependencies += "net.java.dev.jna" % "jna" % "4.1.0"
-
-libraryDependencies += "net.java.dev.jna" % "jna-platform" % "4.1.0"
-
-libraryDependencies += "se.culvertsoft" % "mgen-javalib" % "SNAPSHOT"
+libraryDependencies += "se.gigurra" % "gpt-common" % version.value
 
 libraryDependencies += "se.gigurra" % "libgurra" % "SNAPSHOT"
-
-unmanagedSourceDirectories in Compile += baseDirectory.value / "src_generated/main/java"
 
 EclipseKeys.withSource := true

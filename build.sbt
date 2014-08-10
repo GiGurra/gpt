@@ -13,7 +13,14 @@ crossPaths := false
 
 retrieveManaged := true
 
-// lazy val mgen_api = project in file("mgen-api")
+lazy val gpt_common = project in file("gpt-common")
 
-// lazy val mgen_compiler = (project in file("mgen-compiler")).dependsOn(mgen_api)
+lazy val gpt_displaysreceiver = (project in file("gpt-displaysreceiver")).dependsOn(gpt_common)
 
+lazy val gpt_keyreceiver = (project in file("gpt-keyreceiver")).dependsOn(gpt_common)
+
+lazy val gpt_keytransmitter = (project in file("gpt-keytransmitter")).dependsOn(gpt_common)
+
+lazy val gpt_shmtransmitter = (project in file("gpt-shmtransmitter")).dependsOn(gpt_common)
+
+lazy val gpt_shmreceiver = (project in file("gpt-shmreceiver")).dependsOn(gpt_common)

@@ -3,8 +3,9 @@
     <Types>
         <KeyMessage>
             <value type="int32"/>
-            <modifiers type="int32"/>
-            <extra type="int32"/>
+            <vCode type="int32" id="-24176"/>
+            <scanCode type="int32" id="-1467"/>
+            <flags type="int32"/>
         </KeyMessage>
     </Types>
 </Module>

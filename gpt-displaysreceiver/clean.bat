@@ -1,3 +1,3 @@
 @echo off
 
-rm -rf target/
+sbt clean

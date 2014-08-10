@@ -1,4 +1,4 @@
-package ymfde
+package se.gigurra.gpt.displaysreceiver
 
 import java.awt.Component
 import java.awt.Frame

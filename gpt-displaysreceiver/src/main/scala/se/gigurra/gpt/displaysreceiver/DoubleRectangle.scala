@@ -1,4 +1,4 @@
-package ymfde;
+package se.gigurra.gpt.displaysreceiver
 
 class DoubleRectangle(
     val x: Double,

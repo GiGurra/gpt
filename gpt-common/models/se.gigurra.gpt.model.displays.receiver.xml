@@ -3,9 +3,16 @@
     <Types>
         <StreamReceiverCfg>
             <displays type="list[StreamDisplay]"/>
+            <useShm type="bool"/>
+            <shmName type="string"/>
+            <shmWidth type="int32"/>
+            <shmHeight type="int32"/>
         </StreamReceiverCfg>
         <StreamDisplay>
+            <name type="string"/>
             <active type="bool"/>
+            <border type="bool"/>
+            <alwaysOnTop type="bool"/>
             <source type="StreamPosition"/>
             <target type="StreamPosition"/>
         </StreamDisplay>

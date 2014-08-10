@@ -5,10 +5,10 @@
         <classregistry_path>se.gigurra.gpt.model</classregistry_path>
     </Generator>
     <Generator name="C++">
-		<generate_unity_build>true</generate_unity_build>
         <class_path>se.culvertsoft.mgen.cpppack.generator.CppGenerator</class_path>
         <output_path>src_generated/main/cpp</output_path>
         <classregistry_path>se.gigurra.gpt.model</classregistry_path>
+        <generate_unity_build>true</generate_unity_build>
     </Generator>
     <Sources>
         <Source>se.gigurra.gpt.model.common.xml</Source>
