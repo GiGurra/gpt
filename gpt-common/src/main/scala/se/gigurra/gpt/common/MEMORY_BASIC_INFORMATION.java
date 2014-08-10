@@ -1,4 +1,4 @@
-package shmutils;
+package se.gigurra.gpt.common;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
