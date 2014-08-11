@@ -1,1 +1,0 @@
-copy DisplaysTransmitter.exe ..\dist\
