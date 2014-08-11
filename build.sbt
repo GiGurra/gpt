@@ -11,8 +11,6 @@ isSnapshot := version.value.contains("SNAPSHOT")
 
 crossPaths := false
 
-retrieveManaged := true
-
 lazy val gpt_common = project in file("gpt-common")
 
 lazy val gpt_displaysreceiver = (project in file("gpt-displaysreceiver")).dependsOn(gpt_common)
