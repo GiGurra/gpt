@@ -1,8 +1,9 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <KeyTransmitterCfg>
-            <target type="se.gigurra.gpt.model.common.NetworkTarget"/>
-        </KeyTransmitterCfg>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<KeyTransmitterCfg>
+			<target type="se.gigurra.gpt.model.common.NetworkTarget">{}</target>
+		</KeyTransmitterCfg>
+	</Types>
 </Module>

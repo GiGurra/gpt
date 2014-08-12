@@ -1,11 +1,12 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <KeyMessage>
-            <value type="int32"/>
-            <vCode type="int32" id="-24176"/>
-            <scanCode type="int32" id="-1467"/>
-            <flags type="int32"/>
-        </KeyMessage>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<KeyMessage>
+			<value type="int32" />
+			<vCode type="int32" />
+			<scanCode type="int32" />
+			<flags type="int32" />
+		</KeyMessage>
+	</Types>
 </Module>

@@ -1,10 +1,11 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <ShmMsg>
-            <name type="string"/>
-            <size type="int32"/>
-            <data type="array[int8]"/>
-        </ShmMsg>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<ShmMsg>
+			<name type="string">no_shm</name>
+			<size type="int32">0</size>
+			<data type="array[int8]">[]</data>
+		</ShmMsg>
+	</Types>
 </Module>

@@ -1,9 +1,10 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <NetworkTarget>
-            <ip type="string"/>
-            <port type="int32"/>
-        </NetworkTarget>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<NetworkTarget>
+			<ip type="string">127.0.0.1</ip>
+			<port type="int32">8052</port>
+		</NetworkTarget>
+	</Types>
 </Module>

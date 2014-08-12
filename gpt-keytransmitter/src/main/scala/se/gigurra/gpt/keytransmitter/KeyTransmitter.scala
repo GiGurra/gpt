@@ -1,7 +1,5 @@
 package se.gigurra.gpt.keytransmitter
 
-import java.io.ByteArrayOutputStream
-import java.io.FileInputStream
 import java.nio.ByteBuffer
 
 import com.sun.jna.platform.win32.Kernel32
@@ -13,9 +11,8 @@ import com.sun.jna.platform.win32.WinUser.LowLevelKeyboardProc
 import com.sun.jna.platform.win32.WinUser.MSG
 import com.sun.jna.platform.win32.WinUser.WH_KEYBOARD_LL
 
-import se.culvertsoft.mgen.javapack.serialization.JsonReader
-import se.culvertsoft.mgen.javapack.serialization.JsonWriter
-import se.gigurra.gpt.model.ClassRegistry
+import se.gigurra.gpt.common.ReadConfigFile
+import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.model.keys.common.KeyMessage
 import se.gigurra.gpt.model.keys.transmitter.KeyTransmitterCfg
 import se.gigurra.libgurra.concurrent.ThreadBase
@@ -25,26 +22,19 @@ import se.gigurra.libgurra.parsing.types.BasicMessage
 object KeyTransmitter {
 
   @volatile var quit = false
-  val classRegistry = new ClassRegistry
-  val buffer = new ByteArrayOutputStream
-  val serializer = new JsonWriter(buffer, classRegistry)
 
   def main(args: Array[String]) {
 
+    val settings = ReadConfigFile[KeyTransmitterCfg]("config.json").getOrElse(new KeyTransmitterCfg)
+
     val hm = Kernel32.INSTANCE.GetModuleHandle(null);
-    val reader = new JsonReader(new FileInputStream("config.json"), classRegistry);
-    val settings = reader.readObject(classOf[KeyTransmitterCfg]);
     val ip = settings.getTarget().getIp();
     val port = settings.getTarget().getPort();
 
     val client = new ManagedByteClient(ip, port /* 8052 */ ) {
       def send(msg: KeyMessage) {
-        synchronized {
-          serializer.writeObject(msg)
-          val out = buffer.toByteArray()
-          buffer.reset()
-          send(ByteBuffer.wrap(BasicMessage.fromData(out).allBytes))
-        }
+        send(ByteBuffer.wrap(
+          BasicMessage.fromData(Serializer.writeJson(msg)).allBytes))
       }
       start()
     }

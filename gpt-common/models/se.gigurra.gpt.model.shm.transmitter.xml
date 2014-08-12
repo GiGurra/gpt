@@ -1,10 +1,11 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <ShmTransmitterCfg>
-            <shms type="list[string]"/>
-            <targets type="list[se.gigurra.gpt.model.common.NetworkTarget]"/>
-            <frameRate type="float32"/>
-        </ShmTransmitterCfg>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<ShmTransmitterCfg>
+			<shms type="list[string]">[]</shms>
+			<targets type="list[se.gigurra.gpt.model.common.NetworkTarget]">[]</targets>
+			<frameRate type="float32">50</frameRate>
+		</ShmTransmitterCfg>
+	</Types>
 </Module>

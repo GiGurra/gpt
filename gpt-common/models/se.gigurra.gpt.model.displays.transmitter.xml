@@ -1,22 +1,23 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <StreamTarget extends="se.gigurra.gpt.model.common.NetworkTarget">
-            <maxFps type="float32"/>
-            <maxBwBps type="int32"/>
-            <jpegQual type="float32"/>
-        </StreamTarget>
-        <StreamTransmitterCfg>
-            <useTcp type="bool"/>
-            <targets type="list[StreamTarget]"/>
-            <frameRate type="float32"/>
-            <maxBwBps type="int32"/>
-            <useShm type="bool"/>
-            <shmName type="string"/>
-        </StreamTransmitterCfg>
-        <Stream>
-            <target type="StreamTarget"/>
-            <tLastFrame type="float64"/>
-        </Stream>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<StreamTarget extends="se.gigurra.gpt.model.common.NetworkTarget">
+			<maxFps type="float32">50</maxFps>
+			<maxBwBps type="int32">50000000</maxBwBps>
+			<jpegQual type="float32">0.7</jpegQual>
+		</StreamTarget>
+		<StreamTransmitterCfg>
+			<useTcp type="bool">true</useTcp>
+			<targets type="list[StreamTarget]">[]</targets>
+			<maxFps type="float32">100</maxFps>
+			<maxBwBps type="int32">100000000</maxBwBps>
+			<useShm type="bool">false</useShm>
+			<shmName type="string">no_shm</shmName>
+		</StreamTransmitterCfg>
+		<Stream>
+			<target type="StreamTarget">{}</target>
+			<tLastFrame type="float64">0</tLastFrame>
+		</Stream>
+	</Types>
 </Module>

@@ -1,11 +1,12 @@
 <Module>
-    <Enums> </Enums>
-    <Types>
-        <StreamMsg>
-            <frameNbr type="int32"/>
-            <width type="int32"/>
-            <height type="int32"/>
-            <data type="array[int8]"/>
-        </StreamMsg>
-    </Types>
+	<Enums>
+	</Enums>
+	<Types>
+		<StreamMsg>
+			<frameNbr type="int32">-1</frameNbr>
+			<width type="int32">0</width>
+			<height type="int32">0</height>
+			<data type="array[int8]">[]</data>
+		</StreamMsg>
+	</Types>
 </Module>
