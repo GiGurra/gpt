@@ -56,7 +56,7 @@ object ShmTransmitter {
         msg.setName(shm.name)
         msg.setSize(shm.size)
         shm.read(readBuf, readBuf.length)
-        client.broadcast(Serializer.writeJson(msg))
+        route.send(Serializer.writeJson(msg))
       }
 
       Thread.sleep(15)
