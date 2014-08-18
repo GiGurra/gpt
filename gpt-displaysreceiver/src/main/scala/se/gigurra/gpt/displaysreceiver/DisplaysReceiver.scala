@@ -3,10 +3,6 @@ package se.gigurra.gpt.displaysreceiver
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.nio.file.Files
-import java.nio.file.Paths
 
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.JavaConversions.bufferAsJavaList
@@ -14,22 +10,20 @@ import scala.collection.mutable.ArrayBuffer
 
 import org.libjpegturbo.turbojpeg.TJDecompressor
 
-import se.culvertsoft.mgen.javapack.serialization.JsonReader
-import se.culvertsoft.mgen.javapack.serialization.JsonWriter
 import se.culvertsoft.mnet.Message
 import se.culvertsoft.mnet.api.Connection
 import se.culvertsoft.mnet.api.Route
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.ReadConfigFile
+import se.gigurra.gpt.common.SaveConfigFile
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
-import se.gigurra.gpt.model.ClassRegistry
 import se.gigurra.gpt.model.displays.common.StreamMsg
 import se.gigurra.gpt.model.displays.receiver.StreamReceiverCfg
 
 object DisplaysReceiver {
 
-  val classRegistry = new ClassRegistry
   val tjDec = new TJDecompressor
   val DEFAULT_SETTINGS_FILE_NAME = "config.json"
 
@@ -61,9 +55,7 @@ object DisplaysReceiver {
   def main() {
 
     print("Reading settings from " + DEFAULT_SETTINGS_FILE_NAME + "...")
-    val fileData = Files.readAllBytes(Paths.get(DEFAULT_SETTINGS_FILE_NAME))
-    val jsonReader = new JsonReader(new FileInputStream(DEFAULT_SETTINGS_FILE_NAME), classRegistry)
-    val settings = jsonReader.readObject(classOf[StreamReceiverCfg])
+    val settings = ReadConfigFile[StreamReceiverCfg](DEFAULT_SETTINGS_FILE_NAME).getOrElse(new StreamReceiverCfg)
 
     print("Starting displays...")
 
@@ -155,7 +147,7 @@ object DisplaysReceiver {
       rw.killWindow()
     }
 
-    new JsonWriter(new FileOutputStream(DEFAULT_SETTINGS_FILE_NAME), classRegistry).writeObject(settings)
+    SaveConfigFile(DEFAULT_SETTINGS_FILE_NAME, settings)
     println("ok")
 
   }

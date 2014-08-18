@@ -2,26 +2,29 @@ package se.gigurra.gpt.common
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+
 import scala.language.reflectiveCalls
 import scala.reflect.ClassTag
+
 import se.culvertsoft.mgen.javapack.classes.MGenBase
 import se.culvertsoft.mgen.javapack.serialization.BinaryReader
 import se.culvertsoft.mgen.javapack.serialization.BinaryWriter
 import se.culvertsoft.mgen.javapack.serialization.BuiltInReader
 import se.culvertsoft.mgen.javapack.serialization.BuiltInWriter
+import se.culvertsoft.mgen.javapack.serialization.JsonPrettyWriter
 import se.culvertsoft.mgen.javapack.serialization.JsonReader
-import se.culvertsoft.mgen.javapack.serialization.JsonWriter
 import se.culvertsoft.mnet.DataMessage
 import se.culvertsoft.mnet.Message
-import se.culvertsoft.mgen.javapack.serialization.JsonPrettyWriter
+import se.gigurra.gpt.model.ClassRegistry
 
 object Serializer {
 
+  private val reg = new ClassRegistry
   private val buffer = new ByteArrayOutputStream
-  private val jsonWriter = new JsonPrettyWriter(buffer, Common.reg, true)
-  private val binaryWriter = new BinaryWriter(buffer, Common.reg)
-  private val jsonReader = new JsonReader(new ByteArrayInputStream(Array[Byte]()), Common.reg)
-  private val binaryReader = new BinaryReader(new ByteArrayInputStream(Array[Byte]()), Common.reg)
+  private val jsonWriter = new JsonPrettyWriter(buffer, reg, true)
+  private val binaryWriter = new BinaryWriter(buffer, reg)
+  private val jsonReader = new JsonReader(new ByteArrayInputStream(Array[Byte]()), reg)
+  private val binaryReader = new BinaryReader(new ByteArrayInputStream(Array[Byte]()), reg)
 
   private def write(o: MGenBase, writer: BuiltInWriter): Array[Byte] = {
     writer.writeObject(o)
