@@ -8,19 +8,24 @@ import com.sun.jna.platform.win32.WinUser.KBDLLHOOKSTRUCT
 import com.sun.jna.platform.win32.WinUser.LowLevelKeyboardProc
 import com.sun.jna.platform.win32.WinUser.MSG
 import com.sun.jna.platform.win32.WinUser.WH_KEYBOARD_LL
-
 import se.culvertsoft.mnet.api.Route
 import se.culvertsoft.mnet.client.MNetClient
 import se.gigurra.gpt.common.ReadConfigFile
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.model.keys.common.KeyMessage
 import se.gigurra.gpt.model.keys.transmitter.KeyTransmitterCfg
+import java.io.File
+import se.gigurra.gpt.common.SaveConfigFile
 
 object KeyTransmitter {
 
   def main(args: Array[String]) {
 
-    val settings = ReadConfigFile[KeyTransmitterCfg]("config.json").getOrElse(new KeyTransmitterCfg)
+    val cfgFileName = "keytransmitter_config.json"
+    val settings = ReadConfigFile[KeyTransmitterCfg](cfgFileName).getOrElse(new KeyTransmitterCfg)
+    if (!new File(cfgFileName).exists) {
+      SaveConfigFile(cfgFileName, settings)
+    }
 
     val hm = Kernel32.INSTANCE.GetModuleHandle(null);
     val ip = settings.getTarget().getIp();
