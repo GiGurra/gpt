@@ -1,10 +1,6 @@
 #!/usr/bin/python
-import sys
+from buildimpl import *
 import argparse
-import subprocess
-import shutil
-import os.path
-from subprocess import check_call
 
 # Parse arguments
 parser = argparse.ArgumentParser()
@@ -12,29 +8,32 @@ parser.add_argument("-b", "--build", action='store_true')
 parser.add_argument("-c", "--clean", action='store_true')
 parser.add_argument("-e", "--eclipse", action='store_true')
 parser.add_argument("-g", "--generate", action='store_true')
+parser.add_argument("-t", "--test", action='store_true')
 parser.add_argument("-a", "--all", action='store_true')
+parser.add_argument("-d", "--deploy", action='store_true')
+parser.add_argument("-f", "--deploy_folder", default='X:/johan/deploy/gpt')
 args = parser.parse_args()
 
-def generate_model():
-    check_call("mgen models/project.xml", cwd="gpt-common", shell=True)
-    
 # cleaning
 if args.clean or args.all:
-    if os.path.exists("gpt-common/src_generated"): shutil.rmtree("gpt-common/src_generated")
-    check_call("sbt clean", shell=True)
-    check_call("python build.py -c", cwd="gpt-displaystransmitter", shell=True)
+    clean()
 
 # building
 if args.build or args.all or len(sys.argv) == 1:
-    generate_model()
-    check_call("sbt compile package publish-local assembly", shell=True)
-    check_call("python build.py -b", cwd="gpt-displaystransmitter", shell=True)
+    build()
 
 # generating eclipse projects
+if args.test or args.all:
+    test()
+    
+# generating eclipse projects
 if args.eclipse or args.all:
-    check_call("sbt eclipse", shell=True)
+    eclipse()
 
 # generating model
 if args.generate:
-    generate_model()
+    generate()
     
+# generating model
+if args.deploy:
+    deploy(args.deploy_folder)

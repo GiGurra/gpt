@@ -30,6 +30,10 @@ data_generated/
 # temp files
 *~
 
+# python
+__pychache__/
+*.pyc
+
 # eclipse stuff
 .project
 .classpath
