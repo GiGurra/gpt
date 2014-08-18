@@ -8,13 +8,11 @@ import se.culvertsoft.mnet.client.MNetClient
 import se.gigurra.gpt.common.ReadConfigFile
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
-import se.gigurra.gpt.model.ClassRegistry
 import se.gigurra.gpt.model.shm.common.ShmMsg
 import se.gigurra.gpt.model.shm.transmitter.ShmTransmitterCfg
 
 object ShmTransmitter {
 
-  val classRegisty = new ClassRegistry
   val readBuffers = new HashMap[SharedMemory, Array[Byte]]
 
   def openShms(names: Seq[String]) = {
