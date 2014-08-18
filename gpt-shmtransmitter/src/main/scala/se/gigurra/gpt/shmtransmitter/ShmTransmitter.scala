@@ -48,24 +48,18 @@ object ShmTransmitter {
 
     while (true) {
 
-      for (client <- clients) {
-
-        for (shm <- shms) {
-
-          try {
-            if (client.getRoutes.nonEmpty) {
-              val readBuf = readBuffers(shm)
-              val msg = new ShmMsg
-              msg.setData(readBuf)
-              msg.setName(shm.name)
-              msg.setSize(shm.size)
-              shm.read(readBuf, readBuf.length)
-              client.broadcast(Serializer.writeJson(msg))
-            }
-          } catch {
-            case e: Exception => e.printStackTrace()
-          }
-        }
+      for (
+        client <- clients;
+        route <- client.getRoutes.filterNot(_.connection.hasBufferedData);
+        shm <- shms
+      ) {
+        val readBuf = readBuffers(shm)
+        val msg = new ShmMsg
+        msg.setData(readBuf)
+        msg.setName(shm.name)
+        msg.setSize(shm.size)
+        shm.read(readBuf, readBuf.length)
+        client.broadcast(Serializer.writeJson(msg))
       }
 
       Thread.sleep(15)
