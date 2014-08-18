@@ -10,7 +10,7 @@ object ReadConfigFile {
 
   def apply[T <: MGenBase: ClassTag](fName: String): Option[T] = {
     try {
-      Some(Serializer.readJson[T](ReadFile(fName)))
+      Some(Serializer.readJsonRaw[T](ReadFile(fName)))
     } catch {
       case e: IOException => 
         None

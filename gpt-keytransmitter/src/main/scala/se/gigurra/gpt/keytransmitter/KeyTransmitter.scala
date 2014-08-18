@@ -1,7 +1,5 @@
 package se.gigurra.gpt.keytransmitter
 
-import java.nio.ByteBuffer
-
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.LRESULT
@@ -11,17 +9,14 @@ import com.sun.jna.platform.win32.WinUser.LowLevelKeyboardProc
 import com.sun.jna.platform.win32.WinUser.MSG
 import com.sun.jna.platform.win32.WinUser.WH_KEYBOARD_LL
 
+import se.culvertsoft.mnet.api.Route
+import se.culvertsoft.mnet.client.MNetClient
 import se.gigurra.gpt.common.ReadConfigFile
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.model.keys.common.KeyMessage
 import se.gigurra.gpt.model.keys.transmitter.KeyTransmitterCfg
-import se.gigurra.libgurra.concurrent.ThreadBase
-import se.gigurra.libgurra.net.types.ManagedByteClient
-import se.gigurra.libgurra.parsing.types.BasicMessage
 
 object KeyTransmitter {
-
-  @volatile var quit = false
 
   def main(args: Array[String]) {
 
@@ -30,28 +25,17 @@ object KeyTransmitter {
     val hm = Kernel32.INSTANCE.GetModuleHandle(null);
     val ip = settings.getTarget().getIp();
     val port = settings.getTarget().getPort();
+    var route: Option[Route] = None
 
-    val client = new ManagedByteClient(ip, port /* 8052 */ ) {
-      def send(msg: KeyMessage) {
-        send(ByteBuffer.wrap(
-          BasicMessage.fromData(Serializer.writeJson(msg)).allBytes))
-      }
-      start()
-    }
+    val client = new MNetClient(ip, port) { // port 8052
 
-    new ThreadBase {
-      override def run() {
-        while (!quit) {
-          Thread.sleep(500)
-          try {
-            if (client.isConnected) {
-              client.send(new KeyMessage)
-            }
-          } catch {
-            case e: Exception => e.printStackTrace()
-          }
-        }
+      // TODO: Check that we have the correct endpoint...currently
+      // just picking the first that connects
+      override def handleConnect(route_in: Route) {
+        route = Some(route_in)
+        println(s"$this got route to $route_in")
       }
+
       start()
     }
 
@@ -65,8 +49,10 @@ object KeyTransmitter {
           msg.setScanCode(lp.scanCode)
           msg.setVCode(lp.vkCode)
           try {
-            if (client.isConnected) {
-              client.send(msg)
+            route match {
+              case Some(route) if route.isConnected =>
+                route.send(Serializer.writeJson(msg).setTargetId(route.endpointId))
+              case _ =>
             }
           } catch {
             case e: Exception =>
@@ -86,6 +72,7 @@ object KeyTransmitter {
     }
 
     val msg = new MSG();
+    var quit = false
     while (!quit) {
       val result = User32.INSTANCE.GetMessage(msg, null, 0, 0);
       if (result == -1 || result == 0) {

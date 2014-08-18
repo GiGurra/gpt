@@ -3,7 +3,6 @@ package se.gigurra.gpt.displaysreceiver
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
-import java.io.ByteArrayInputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
@@ -15,15 +14,18 @@ import scala.collection.mutable.ArrayBuffer
 
 import org.libjpegturbo.turbojpeg.TJDecompressor
 
-import se.culvertsoft.mgen.javapack.serialization.BinaryReader
 import se.culvertsoft.mgen.javapack.serialization.JsonReader
 import se.culvertsoft.mgen.javapack.serialization.JsonWriter
+import se.culvertsoft.mnet.Message
+import se.culvertsoft.mnet.api.Connection
+import se.culvertsoft.mnet.api.Route
+import se.culvertsoft.mnet.backend.WebsockBackendSettings
+import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
 import se.gigurra.gpt.model.ClassRegistry
 import se.gigurra.gpt.model.displays.common.StreamMsg
 import se.gigurra.gpt.model.displays.receiver.StreamReceiverCfg
-import se.gigurra.libgurra.net.types.BasicTcpServer
-import se.gigurra.libgurra.parsing.types.BasicMessage
 
 object DisplaysReceiver {
 
@@ -90,21 +92,23 @@ object DisplaysReceiver {
     println("ok")
 
     // Start listening on TCP
-    val server = new BasicTcpServer(
-      8051,
-      5.0,
-      1 * 1024 * 1024,
-      1 * 1024 * 1024) {
-      override protected def handleMessage(c: Client, _msg: BasicMessage) {
-        val reader = new BinaryReader(new ByteArrayInputStream(_msg.data), classRegistry)
-        val msg = reader.readObject(classOf[StreamMsg])
-        tjDec.setJPEGImage(msg.getData(), msg.getData().length)
-        ensureBiSize(tjDec.getWidth(), tjDec.getHeight())
-        swapChain.paint(tjDec.decompress(_, 0))
-        issueRedrawWindows()
+    val server = new MNetClient(new WebsockBackendSettings().setListenPort(8051)) {
+
+      override def handleMessage(msg_in: Message, connection: Connection, route: Route) {
+        println(s"$this got ${msg_in._typeName} from $connection")
+        Serializer.read[StreamMsg](msg_in) match {
+          case Some(msg) =>
+            tjDec.setJPEGImage(msg.getData(), msg.getData().length)
+            ensureBiSize(tjDec.getWidth(), tjDec.getHeight())
+            swapChain.paint(tjDec.decompress(_, 0))
+            issueRedrawWindows()
+          case _ => println("But was either not a DataMessage or had no binary data")
+        }
       }
+
     }
-    val listenerThread = server.start()
+
+    server.start()
 
     if (settings.getUseShm()) {
       var sm = new SharedMemory(settings.getShmName, 0, false)
@@ -138,8 +142,7 @@ object DisplaysReceiver {
     }
 
     // Kill recv server
-    listenerThread.kill()
-    listenerThread.join()
+    server.stop()
 
     // Save xml
     print("Closing displays and saving settings to " + DEFAULT_SETTINGS_FILE_NAME + "...")

@@ -5,7 +5,7 @@ import se.culvertsoft.mgen.javapack.classes.MGenBase
 object SaveConfigFile {
 
   def apply[T <: MGenBase](fName: String, t: T) {
-    WriteFile(fName, Serializer.writeJson(t))
+    WriteFile(fName, Serializer.writeJsonRaw(t))
   }
 
 }

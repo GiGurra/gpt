@@ -1,21 +1,16 @@
 package falcon.shmdistributor
 
-import java.io.ByteArrayOutputStream
-import java.io.FileInputStream
-import java.nio.ByteBuffer
-
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 
-import se.culvertsoft.mgen.javapack.serialization.BinaryWriter
-import se.culvertsoft.mgen.javapack.serialization.JsonReader
+import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.ReadConfigFile
+import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
 import se.gigurra.gpt.model.ClassRegistry
 import se.gigurra.gpt.model.shm.common.ShmMsg
 import se.gigurra.gpt.model.shm.transmitter.ShmTransmitterCfg
-import se.gigurra.libgurra.net.types.ManagedByteClient
-import se.gigurra.libgurra.parsing.types.BasicMessage
 
 object ShmTransmitter {
 
@@ -46,25 +41,10 @@ object ShmTransmitter {
 
   def main(args: Array[String]) {
 
-    val reader = new JsonReader(new FileInputStream("config.json"), classRegisty)
-    val settings = reader.readObject(classOf[ShmTransmitterCfg])
-    val buffer = new ByteArrayOutputStream
-    val serializer = new BinaryWriter(buffer, classRegisty)
+    val settings = ReadConfigFile[ShmTransmitterCfg]("config.json").getOrElse(new ShmTransmitterCfg)
 
-    val clients = settings.getTargets.map { target =>
-      new ManagedByteClient(target.getIp, target.getPort /* 8052 */ ) {
-        def send(msg: ShmMsg) {
-          synchronized {
-            serializer.writeObject(msg)
-            val out = buffer.toByteArray()
-            buffer.reset()
-            if (!isChoked)
-              send(ByteBuffer.wrap(BasicMessage.fromData(out).allBytes))
-          }
-        }
-        start()
-      }
-    }
+    val clients = settings.getTargets.map { t => new MNetClient(t.getIp, t.getPort) }
+    clients.foreach(_.start())
 
     val shms = openShms(settings.getShms)
 
@@ -75,14 +55,14 @@ object ShmTransmitter {
         for (shm <- shms) {
 
           try {
-            if (client.isConnected) {
+            if (client.getRoutes.nonEmpty) {
               val readBuf = readBuffers(shm)
               val msg = new ShmMsg
               msg.setData(readBuf)
               msg.setName(shm.name)
               msg.setSize(shm.size)
               shm.read(readBuf, readBuf.length)
-              client.send(msg)
+              client.broadcast(Serializer.writeJson(msg))
             }
           } catch {
             case e: Exception => e.printStackTrace()
