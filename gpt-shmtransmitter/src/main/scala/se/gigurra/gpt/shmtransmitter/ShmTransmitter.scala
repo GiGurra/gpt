@@ -40,10 +40,7 @@ object ShmTransmitter {
   def main(args: Array[String]) {
 
     val settings = ReadConfigFile[ShmTransmitterCfg]("config.json").getOrElse(new ShmTransmitterCfg)
-
-    val clients = settings.getTargets.map { t => new MNetClient(t.getIp, t.getPort) }
-    clients.foreach(_.start())
-
+    val clients = settings.getTargets.map { t => new MNetClient(t.getIp, t.getPort).start() }
     val shms = openShms(settings.getShms)
 
     while (true) {
