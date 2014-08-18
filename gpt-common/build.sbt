@@ -17,7 +17,7 @@ libraryDependencies += "net.java.dev.jna" % "jna-platform" % "4.1.0"
 
 libraryDependencies += "se.culvertsoft" % "mgen-javalib" % "SNAPSHOT"
 
-libraryDependencies += "se.gigurra" % "libgurra" % "SNAPSHOT"
+libraryDependencies += "se.culvertsoft" % "mnet-client" % "SNAPSHOT"
 
 unmanagedSourceDirectories in Compile += baseDirectory.value / "src_generated/main/java"
 

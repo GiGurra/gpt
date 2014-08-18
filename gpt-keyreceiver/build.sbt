@@ -13,6 +13,4 @@ crossPaths := false
 
 libraryDependencies += "se.gigurra" % "gpt-common" % version.value
 
-libraryDependencies += "se.gigurra" % "libgurra" % "SNAPSHOT"
-
 EclipseKeys.withSource := true
