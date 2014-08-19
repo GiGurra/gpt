@@ -47,7 +47,10 @@ object KeyTransmitter {
 
         for (route <- client.getRoutes) {
           if (route.isConnected && route.name == NetworkNames.KEY_RECEIVER) {
-            route.send(Serializer.writeJson(msg).setTargetId(route.endpointId))
+            route.send(
+                Serializer.writeJson(msg)
+                .setTargetId(route.endpointId)
+                .setSenderId(client.id))
           }
         }
 

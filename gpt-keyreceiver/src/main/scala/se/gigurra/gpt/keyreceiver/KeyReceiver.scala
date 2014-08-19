@@ -25,6 +25,7 @@ object KeyReceiver {
       new NodeSettings().setName(NetworkNames.KEY_RECEIVER)) {
 
       override def handleMessage(msg: Message, connection: Connection, route: Route) {
+
         if (route != null && route.name == NetworkNames.KEY_TRANSMITTER) {
 
           Serializer.read[KeyMessage](msg) match {

@@ -67,7 +67,8 @@ object ShmTransmitter {
             route.send(Serializer.writeBinary(new ShmMsg()
               .setData(readBuffers(shm))
               .setName(shm.name)
-              .setSize(shm.size)))
+              .setSize(shm.size))
+              .setSenderId(client.id))
           }
         }
       }

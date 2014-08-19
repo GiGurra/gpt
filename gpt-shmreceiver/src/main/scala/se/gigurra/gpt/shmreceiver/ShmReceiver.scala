@@ -25,7 +25,6 @@ object ShmReceiver {
 
         if (route != null && route.name == NetworkNames.SHM_TRANSMITTER) {
 
-          println(s"$this got ${msg._typeName} from $connection")
           Serializer.read[ShmMsg](msg) match {
             case Some(msg) =>
               val shm = sharedMems.getOrElseUpdate(msg.getName, new SharedMemory(msg.getName, msg.getSize, true))
