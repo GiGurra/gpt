@@ -3,6 +3,7 @@ package se.gigurra.gpt.shmreceiver
 import scala.collection.mutable.HashMap
 
 import se.culvertsoft.mnet.Message
+import se.culvertsoft.mnet.NodeSettings
 import se.culvertsoft.mnet.api.Connection
 import se.culvertsoft.mnet.api.Route
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
@@ -19,7 +20,9 @@ object ShmReceiver {
 
   def main(args: Array[String]) {
 
-    new MNetClient(new WebsockBackendSettings().setListenPort(listenPort)) {
+    new MNetClient(
+      new WebsockBackendSettings().setListenPort(listenPort),
+      new NodeSettings().setName(NetworkNames.SHM_RECEIVER)) {
 
       override def handleMessage(msg: Message, connection: Connection, route: Route) {
 
