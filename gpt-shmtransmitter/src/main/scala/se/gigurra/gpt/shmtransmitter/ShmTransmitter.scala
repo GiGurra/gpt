@@ -4,18 +4,18 @@ import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.JavaConversions.bufferAsJavaList
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
+
 import se.culvertsoft.mnet.Message
 import se.culvertsoft.mnet.NodeSettings
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
 import se.gigurra.gpt.common.NetworkNames
 import se.gigurra.gpt.common.ReadConfigFile
+import se.gigurra.gpt.common.SaveConfigFile
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
 import se.gigurra.gpt.model.shm.common.ShmMsg
 import se.gigurra.gpt.model.shm.transmitter.ShmTransmitterCfg
-import java.nio.file.Files
-import se.gigurra.gpt.common.SaveConfigFile
 
 object ShmTransmitter {
 

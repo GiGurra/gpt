@@ -27,9 +27,7 @@ object KeyTransmitter {
 
     val cfgFileName = "keytransmitter_config.json"
     val cfg = ReadConfigFile[KeyTransmitterCfg](cfgFileName).getOrElse(new KeyTransmitterCfg)
-    if (!new File(cfgFileName).exists) {
-      SaveConfigFile(cfgFileName, cfg)
-    }
+    SaveConfigFile(cfgFileName, cfg)
 
     val client = new MNetClient(
       NetworkNames.KEY_TRANSMITTER,

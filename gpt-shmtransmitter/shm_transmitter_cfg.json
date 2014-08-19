@@ -8,7 +8,7 @@
 	"targets": [
 		{
 			"ip": "gigurra-pc",
-			"port": 80
+			"port": 8053
 		}
 	],
 	"frameRate": 50.0
