@@ -1,2 +1,0 @@
-jna, 
-libgurra
