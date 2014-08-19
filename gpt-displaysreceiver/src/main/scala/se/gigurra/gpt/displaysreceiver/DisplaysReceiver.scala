@@ -27,7 +27,7 @@ import se.gigurra.gpt.model.displays.receiver.StreamReceiverCfg
 object DisplaysReceiver {
 
   val tjDec = new TJDecompressor
-  val DEFAULT_SETTINGS_FILE_NAME = "config.json"
+  val DEFAULT_SETTINGS_FILE_NAME = "displays_receiver_cfg.json"
 
   val windows = new ArrayBuffer[RenderWindow]
   val swapChain = new TripleBuffer[BufferedImage](new Array[BufferedImage](3), false)
@@ -54,15 +54,18 @@ object DisplaysReceiver {
     windows.forall(_.isAlive)
   }
 
-  def main() {
+  def main(args: Array[String]) {
 
     print("Reading settings from " + DEFAULT_SETTINGS_FILE_NAME + "...")
     val settings = ReadConfigFile[StreamReceiverCfg](DEFAULT_SETTINGS_FILE_NAME).getOrElse(new StreamReceiverCfg)
+    SaveConfigFile(DEFAULT_SETTINGS_FILE_NAME, settings)
 
     print("Starting displays...")
 
     for (display <- settings.getDisplays()) {
+      println(s"Checking ${display.getName}")
       if (display.getActive()) {
+        println("Active")
         val xScr = display.getTarget().getX().toInt
         val yScr = display.getTarget().getY().toInt
         val wScr = display.getTarget().getWidth().toInt
@@ -73,14 +76,14 @@ object DisplaysReceiver {
         val hTex = display.getSource().getHeight()
         val border = display.getBorder()
         val aot = display.getAlwaysOnTop()
-        windows.add(new RenderWindow( //
-          display.getName(), //
-          new Rectangle(xScr, yScr, wScr, hScr), //
-          new DoubleRectangle(xTex, yTex, wTex, hTex), //
-          border, //
-          aot, //
-          swapChain) //
-          )
+        val window = new RenderWindow(
+          display.getName(),
+          new Rectangle(xScr, yScr, wScr, hScr),
+          new DoubleRectangle(xTex, yTex, wTex, hTex),
+          border,
+          aot,
+          swapChain)
+        windows.add(window)
       }
     }
     println("ok")
@@ -105,14 +108,14 @@ object DisplaysReceiver {
       start()
     }
 
-    if (settings.getUseShm()) {
-      var sm = new SharedMemory(settings.getShmName, 0, false)
-      while (allVisible(windows)) {
+    var sm = if (settings.getUseShm) new SharedMemory(settings.getShmName, 0, false) else null
+    while (allVisible(windows)) {
 
-        if (System.nanoTime() / 1e9 - lastTcpMsgAt < 2.0) {
-          Thread.sleep(100)
-        } else {
+      if (System.nanoTime() / 1e9 - lastTcpMsgAt < 2.0) {
+        Thread.sleep(100)
+      } else {
 
+        if (settings.getUseShm) {
           if (sm.valid) {
 
             ensureBiSize(settings.getShmWidth, settings.getShmHeight)

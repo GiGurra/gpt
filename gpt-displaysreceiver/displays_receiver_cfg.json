@@ -1,0 +1,99 @@
+{
+	"__t": "Wb4",
+	"displays": [
+		{
+			"name": "Left_MFD",
+			"active": true,
+			"border": false,
+			"alwaysOnTop": true,
+			"source": {
+				"x": 0.625,
+				"y": 0.625,
+				"width": 0.375,
+				"height": 0.375
+			},
+			"target": {
+				"x": 2261.0,
+				"y": 50.0,
+				"width": 680.0,
+				"height": 680.0
+			}
+		},
+		{
+			"name": "Right_MFD",
+			"active": true,
+			"border": false,
+			"alwaysOnTop": true,
+			"source": {
+				"x": 0.625,
+				"y": 0.24166666666666667,
+				"width": 0.375,
+				"height": 0.375
+			},
+			"target": {
+				"x": 3975.0,
+				"y": 50.0,
+				"width": 680.0,
+				"height": 680.0
+			}
+		},
+		{
+			"name": "RWR",
+			"active": false,
+			"border": false,
+			"alwaysOnTop": true,
+			"source": {
+				"x": 0.8033333333333333,
+				"y": 0.0,
+				"width": 0.19666666666666666,
+				"height": 0.19666666666666666
+			},
+			"target": {
+				"x": 1200.0,
+				"y": 600.0,
+				"width": 200.0,
+				"height": 200.0
+			}
+		},
+		{
+			"name": "HUD",
+			"active": false,
+			"border": false,
+			"alwaysOnTop": true,
+			"source": {
+				"x": 0.0,
+				"y": 0.0,
+				"width": 0.4666666666666667,
+				"height": 0.4666666666666667
+			},
+			"target": {
+				"x": 700.0,
+				"y": 600.0,
+				"width": 400.0,
+				"height": 400.0
+			}
+		},
+		{
+			"name": "DED",
+			"active": false,
+			"border": false,
+			"alwaysOnTop": true,
+			"source": {
+				"x": 0.4683333333333333,
+				"y": 0.11833333333333333,
+				"width": 0.3333333333333333,
+				"height": 0.11666666666666667
+			},
+			"target": {
+				"x": 1500.0,
+				"y": 600.0,
+				"width": 200.0,
+				"height": 70.0
+			}
+		}
+	],
+	"useShm": false,
+	"shmName": "no_shm",
+	"shmWidth": 0,
+	"shmHeight": 0
+}
