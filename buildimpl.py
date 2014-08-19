@@ -28,7 +28,6 @@ def generate():
     generate_model()
 
 def deploy(folder):
-    rmFolder(folder)
     mkFolder(folder)
     for jarFile in findFiles(".", '*assembly*.jar*'):
         trgFilePath = folder + "/" + os.path.basename(jarFile)
