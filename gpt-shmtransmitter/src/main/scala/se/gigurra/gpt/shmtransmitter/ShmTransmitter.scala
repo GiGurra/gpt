@@ -5,6 +5,7 @@ import scala.collection.JavaConversions.bufferAsJavaList
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 
+import se.culvertsoft.mnet.Message
 import se.culvertsoft.mnet.NodeSettings
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
@@ -18,6 +19,7 @@ import se.gigurra.gpt.model.shm.transmitter.ShmTransmitterCfg
 object ShmTransmitter {
 
   val readBuffers = new HashMap[SharedMemory, Array[Byte]]
+  val msgs = new HashMap[SharedMemory, Message]
 
   def openShms(names: Seq[String]) = {
 
@@ -54,21 +56,25 @@ object ShmTransmitter {
 
     while (true) {
 
-      // Read shms
+      // Create shm msgs
       for (shm <- shms) {
+
         val readBuf = readBuffers(shm)
         shm.read(readBuf, readBuf.length)
+
+        val msg = Serializer.writeBinary(new ShmMsg()
+          .setData(readBuffers(shm))
+          .setName(shm.name)
+          .setSize(shm.size))
+          .setSenderId(client.id)
+        msgs.put(shm, msg)
       }
 
       // Send shms
       for (route <- client.getRoutes) {
         if (route.isConnected && !route.hasBufferedData && route.name == NetworkNames.SHM_RECEIVER) {
           for (shm <- shms) {
-            route.send(Serializer.writeBinary(new ShmMsg()
-              .setData(readBuffers(shm))
-              .setName(shm.name)
-              .setSize(shm.size))
-              .setSenderId(client.id))
+            route.send(msgs(shm).setTargetId(route.endpointId))
           }
         }
       }
