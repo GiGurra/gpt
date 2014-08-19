@@ -1,0 +1,15 @@
+{
+	"__t": "9kM",
+	"shms": [
+		"FalconSharedOsbMemoryArea",
+		"FalconSharedMemoryArea",
+		"FalconSharedMemoryArea2"
+	],
+	"targets": [
+		{
+			"ip": "gigurra-pc",
+			"port": 80
+		}
+	],
+	"frameRate": 50.0
+}
