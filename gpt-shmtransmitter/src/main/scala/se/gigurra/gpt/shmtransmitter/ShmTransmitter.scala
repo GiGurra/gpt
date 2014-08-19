@@ -1,10 +1,14 @@
 package falcon.shmdistributor
 
 import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConversions.bufferAsJavaList
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 
+import se.culvertsoft.mnet.NodeSettings
+import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.NetworkNames
 import se.gigurra.gpt.common.ReadConfigFile
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
@@ -39,24 +43,33 @@ object ShmTransmitter {
 
   def main(args: Array[String]) {
 
-    val settings = ReadConfigFile[ShmTransmitterCfg]("config.json").getOrElse(new ShmTransmitterCfg)
-    val clients = settings.getTargets.map { t => new MNetClient(t.getIp, t.getPort).start() }
-    val shms = openShms(settings.getShms)
+    val cfg = ReadConfigFile[ShmTransmitterCfg]("config.json").getOrElse(new ShmTransmitterCfg)
+
+    val nodeSettings = new NodeSettings().setName(NetworkNames.SHM_TRANSMITTER)
+    val wsSettings = new WebsockBackendSettings().unsetListenPort()
+    wsSettings.getConnectTo().addAll(cfg.getTargets.map(se.gigurra.gpt.common.NetworkAddr2Url.apply))
+
+    val client = new MNetClient(wsSettings, nodeSettings).start()
+    val shms = openShms(cfg.getShms)
 
     while (true) {
 
-      for (
-        client <- clients;
-        route <- client.getRoutes.filterNot(_.connection.hasBufferedData);
-        shm <- shms
-      ) {
+      // Read shms
+      for (shm <- shms) {
         val readBuf = readBuffers(shm)
-        val msg = new ShmMsg
-        msg.setData(readBuf)
-        msg.setName(shm.name)
-        msg.setSize(shm.size)
         shm.read(readBuf, readBuf.length)
-        route.send(Serializer.writeJson(msg))
+      }
+
+      // Send shms
+      for (route <- client.getRoutes) {
+        if (route.isConnected && !route.hasBufferedData && route.name == NetworkNames.SHM_RECEIVER) {
+          for (shm <- shms) {
+            route.send(Serializer.writeBinary(new ShmMsg()
+              .setData(readBuffers(shm))
+              .setName(shm.name)
+              .setSize(shm.size)))
+          }
+        }
       }
 
       Thread.sleep(15)

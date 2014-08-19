@@ -7,10 +7,12 @@ import com.sun.jna.platform.win32.WinUser.INPUT
 import com.sun.jna.platform.win32.WinUser.KEYBDINPUT
 
 import se.culvertsoft.mnet.Message
+import se.culvertsoft.mnet.NodeSettings
 import se.culvertsoft.mnet.api.Connection
 import se.culvertsoft.mnet.api.Route
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.NetworkNames
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.model.keys.common.KeyMessage
 
@@ -18,14 +20,16 @@ object KeyReceiver {
 
   def main(args: Array[String]) {
 
-    val server = new MNetClient(new WebsockBackendSettings().setListenPort(8052)) {
+    val server = new MNetClient(
+      new WebsockBackendSettings().setListenPort(8052),
+      new NodeSettings().setName(NetworkNames.KEY_RECEIVER)) {
 
       override def handleMessage(msg: Message, connection: Connection, route: Route) {
+        if (route != null && route.name == NetworkNames.KEY_TRANSMITTER) {
 
-        Serializer.read[KeyMessage](msg) match {
-          case Some(msg) =>
-            try {
-              if (msg.hasValue()) {
+          Serializer.read[KeyMessage](msg) match {
+            case Some(msg) =>
+              if (msg.hasValue) {
                 val inp = new INPUT();
                 inp.input.setType(classOf[KEYBDINPUT]);
                 inp.`type` = new DWORD(INPUT.INPUT_KEYBOARD);
@@ -40,14 +44,10 @@ object KeyReceiver {
                 inp.input.ki.wVk = new WORD(msg.getVCode);
                 User32.INSTANCE.SendInput(new DWORD(1), Array(inp), inp.size());
               }
-            } catch {
-              case e: Exception =>
-                System.err.println("Bad data in stream:");
-                e.printStackTrace();
-            }
-          case _ =>
-        }
+            case _ =>
+          }
 
+        }
       }
 
       start()

@@ -11,10 +11,12 @@ import scala.collection.mutable.ArrayBuffer
 import org.libjpegturbo.turbojpeg.TJDecompressor
 
 import se.culvertsoft.mnet.Message
+import se.culvertsoft.mnet.NodeSettings
 import se.culvertsoft.mnet.api.Connection
 import se.culvertsoft.mnet.api.Route
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.NetworkNames
 import se.gigurra.gpt.common.ReadConfigFile
 import se.gigurra.gpt.common.SaveConfigFile
 import se.gigurra.gpt.common.Serializer
@@ -84,7 +86,9 @@ object DisplaysReceiver {
     println("ok")
 
     // Start listening on TCP
-    val server = new MNetClient(new WebsockBackendSettings().setListenPort(8051)) {
+    val server = new MNetClient(
+      new WebsockBackendSettings().setListenPort(8051),
+      new NodeSettings().setName(NetworkNames.DISP_RECEIVER)) {
 
       override def handleMessage(msg_in: Message, connection: Connection, route: Route) {
         println(s"$this got ${msg_in._typeName} from $connection")
@@ -98,9 +102,8 @@ object DisplaysReceiver {
         }
       }
 
+      start()
     }
-
-    server.start()
 
     if (settings.getUseShm()) {
       var sm = new SharedMemory(settings.getShmName, 0, false)

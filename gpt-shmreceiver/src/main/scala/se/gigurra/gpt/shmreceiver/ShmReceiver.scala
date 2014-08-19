@@ -7,6 +7,7 @@ import se.culvertsoft.mnet.api.Connection
 import se.culvertsoft.mnet.api.Route
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
+import se.gigurra.gpt.common.NetworkNames
 import se.gigurra.gpt.common.Serializer
 import se.gigurra.gpt.common.SharedMemory
 import se.gigurra.gpt.model.shm.common.ShmMsg
@@ -21,15 +22,19 @@ object ShmReceiver {
     new MNetClient(new WebsockBackendSettings().setListenPort(listenPort)) {
 
       override def handleMessage(msg: Message, connection: Connection, route: Route) {
-        println(s"$this got ${msg._typeName} from $connection")
-        Serializer.read[ShmMsg](msg) match {
-          case Some(msg) =>
-            val shm = sharedMems.getOrElseUpdate(msg.getName, new SharedMemory(msg.getName, msg.getSize, true))
-            if (shm.valid) {
-              shm.write(msg.getData, 0, msg.getData.length)
-              shm.flush()
-            }
-          case _ =>
+
+        if (route != null && route.name == NetworkNames.SHM_TRANSMITTER) {
+
+          println(s"$this got ${msg._typeName} from $connection")
+          Serializer.read[ShmMsg](msg) match {
+            case Some(msg) =>
+              val shm = sharedMems.getOrElseUpdate(msg.getName, new SharedMemory(msg.getName, msg.getSize, true))
+              if (shm.valid) {
+                shm.write(msg.getData, 0, msg.getData.length)
+                shm.flush()
+              }
+            case _ =>
+          }
         }
       }
 
