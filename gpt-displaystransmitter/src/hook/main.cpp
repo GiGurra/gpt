@@ -20,13 +20,13 @@ static void readSettingsFromFile() {
 	GetCurrentDirectoryA(255, fullPathName);
 	strcat(fullPathName, "\\DisplaysTransmitter.ini");
 	// Read SHM settings
-	g_shmSettings.active = GetPrivateProfileInt("falconhook_shm", "active", 0, fullPathName);
+	g_shmSettings.active = GetPrivateProfileInt("falconhook_shm", "active", 0, fullPathName) != 0;
 	GetPrivateProfileStringA("falconhook_shm", "name", "GiGurraTexturesSharedMemoryArea", g_shmSettings.name, 128,
 			fullPathName);
 	g_shmSettings.pad = 0;
 
 	// Read socket settings
-	g_socketSettings.active = GetPrivateProfileInt("falconhook_socket", "active", 0, fullPathName);
+	g_socketSettings.active = GetPrivateProfileInt("falconhook_socket", "active", 0, fullPathName) != 0;
 	GetPrivateProfileStringA("falconhook_socket", "addr", "127.0.0.1", g_socketSettings.addrStr, 128, fullPathName);
 	g_socketSettings.pad = 0;
 	g_socketSettings.port = GetPrivateProfileInt("falconhook_socket", "port", 0, fullPathName);
