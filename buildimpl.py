@@ -7,10 +7,12 @@ from buildutil import *
 
 def clean():
     rmFolder("gpt-common/src_generated")
+    rmFolder("gpt-displaystransmitter/target")
     check_call("sbt clean", shell=True)
     check_call("python build.py -c", cwd="gpt-displaystransmitter", shell=True)
     
 def build():
+    build_cpp()
     generate_model()
     check_call("sbt compile package publish-local assembly", shell=True)
     check_call("python build.py -b", cwd="gpt-displaystransmitter", shell=True)
@@ -45,3 +47,11 @@ default_cpp_build_cfg = "NEEDS_TO_BE_SET"
 def generate_model():
     check_call("mgen models/project.xml", cwd="gpt-common", shell=True)
     
+def build_cpp():
+    mkFolder("gpt-displaystransmitter/target")
+    mkFolder("gpt-displaystransmitter/target/hook")
+    mkFolder("gpt-displaystransmitter/target/loader") 
+    # cmake("gpt-displaystransmitter/target/hook", "../../src/hook", "Release")
+    cmake("gpt-displaystransmitter/target/loader", "../../src/loader", "Release")
+    # cppBuild("gpt-displaystransmitter/target/hook", "Release", "gpt_displaystransmitter_hook")
+    cppBuild("gpt-displaystransmitter/target/loader", "Release", "gpt_displaystransmitter_loader")
