@@ -93,15 +93,23 @@ object DisplaysReceiver {
       new WebsockBackendSettings().setListenPort(8051),
       new NodeSettings().setName(NetworkNames.DISP_RECEIVER)) {
 
+      def time() = System.nanoTime() / 1e6
+      var tLast = time
+
       override def handleMessage(msg_in: Message, connection: Connection, route: Route) {
-        println(s"$this got ${msg_in._typeName} from $connection")
-        Serializer.read[StreamMsg](msg_in) match {
-          case Some(msg) =>
-            tjDec.setJPEGImage(msg.getData(), msg.getData().length)
-            ensureBiSize(tjDec.getWidth(), tjDec.getHeight())
-            swapChain.paint(tjDec.decompress(_, 0))
-            issueRedrawWindows()
-          case _ => println("But was either not a DataMessage or had no binary data")
+        if (route != null && route.name == NetworkNames.DISP_TRANSMITTER) {
+          Serializer.read[StreamMsg](msg_in) match {
+            case Some(msg) =>
+              val t = time
+              println(t - tLast)
+              tLast = t
+              println(s"$this got frame ${msg.getFrameNbr}: ${msg.getWidth} x ${msg.getHeight} (${msg.getData.size})")
+            //tjDec.setJPEGImage(msg.getData(), msg.getData().length)
+            // ensureBiSize(tjDec.getWidth(), tjDec.getHeight())
+            // swapChain.paint(tjDec.decompress(_, 0))
+            // issueRedrawWindows()
+            case _ => println("But was either not a DataMessage or had no binary data")
+          }
         }
       }
 

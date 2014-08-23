@@ -8,6 +8,7 @@
 #include <QtCore/QCoreApplication>
 #include <QEventLoop>
 #include <QTimer>
+#include <QTime>
 #include "jpeglib.h"
 #include "turbojpeg.h"
 
@@ -65,11 +66,10 @@ static DataMessage wrapMsg(const StreamMsg& msg) {
 static void threadFunc(volatile void * src, const int width, const int height) {
 	static const std::string& myNetworkName = "gpt-disp-transmitter";
 	static const std::string& tgtNetworkName = "gpt-disp-receiver";
-
 	static unsigned char s_compressBuffer[10 * 1024 * 1024];
-	static auto _qtApp = ensureQtAppOrCreateNew(0, 0);
 	static tjhandle jpgCompressor = tjInitCompress();
 
+	auto _qtApp = ensureQtAppOrCreateNew(0, 0);
 	logText("Enter threadFunc");
 		
 	std::vector<std::shared_ptr<mnet::MNetClient>> clients;
@@ -79,36 +79,41 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 	}
 
 	int frameNbr = 0;
-	QTimer timer;
+	QTime elapsedTimer;
+	QTimer stepTimer;
 	QEventLoop eventLoop;
-	QObject::connect(&timer, &QTimer::timeout, [&] {
+	QObject::connect(&stepTimer, &QTimer::timeout, [&] {
 		if (s_toLive) {
+			if (elapsedTimer.elapsed() >= 1000.0 / g_settings.getMaxFps()) {
+				elapsedTimer.restart();
 
-			unsigned long frameSize = sizeof(s_compressBuffer);
-			unsigned char * p = s_compressBuffer;
-			const int res = tjCompress2(jpgCompressor, (unsigned char *)src, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
-			if (res == 0) {
+				unsigned long frameSize = sizeof(s_compressBuffer);
+				unsigned char * p = s_compressBuffer;
+				const int res = tjCompress2(jpgCompressor, (unsigned char *)src, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
+				if (res == 0) {
 
-				DataMessage lowLevelMsg = wrapMsg(createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height));
-				
-				for (auto& client : clients) {
-					if (client->isConnected()) {
-						for (const auto& route : client->getRoutes()) {
-							if (route.name() == tgtNetworkName) {
-								client->send(lowLevelMsg.setTargetId(route.details().getSenderId()));
+					DataMessage lowLevelMsg = wrapMsg(createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height));
+
+					for (auto& client : clients) {
+						if (client->isConnected()) {
+							for (const auto& route : client->getRoutes()) {
+								if (route.name() == tgtNetworkName) {
+									client->send(lowLevelMsg.setTargetId(route.details().getSenderId()));
+								}
 							}
 						}
 					}
 				}
-			}
-			else {
-				logText(std::string("tjCompress2 failed with error code ").append(std::to_string(res)));
+				else {
+					logText(std::string("tjCompress2 failed with error code ").append(std::to_string(res)));
+				}
 			}
 		} else {
 			eventLoop.exit();
 		}
 	});
-	timer.start(1000.0 / g_settings.getMaxFps());
+	elapsedTimer.start();
+	stepTimer.start(1); // We can't set teh refresh rate here, because the timers are too imprecise
 	eventLoop.exec();
 
 	logText("Exit threadFunc");
