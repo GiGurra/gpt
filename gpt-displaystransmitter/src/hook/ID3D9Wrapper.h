@@ -30,5 +30,5 @@ public:
   STDMETHOD_(HMONITOR, GetAdapterMonitor)(THIS_ UINT Adapter) ;
   STDMETHOD(CreateDevice)(THIS_ UINT Adapter,D3DDEVTYPE DeviceType,HWND hFocusWindow,DWORD BehaviorFlags,D3DPRESENT_PARAMETERS* pPresentationParameters,IDirect3DDevice9** ppReturnedDeviceInterface) ;
 
-   IDirect3D9* Direct3D9;
+   IDirect3D9* m_d3d;
 };

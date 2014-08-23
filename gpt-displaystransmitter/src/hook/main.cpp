@@ -4,15 +4,15 @@
 #include "ID3D9Wrapper.h"
 #pragma comment(lib, "detours.lib")
 
-SmhSettings g_shmSettings = { };
-SocketSettings g_socketSettings = { };
-
 typedef IDirect3D9 *(WINAPI*CreateD3D9DevFcn)(UINT SDKVersion);
 static CreateD3D9DevFcn s_realCreateD3D9IfFcn = NULL;
 
-static IDirect3D9* WINAPI Mine_Direct3DCreate9(UINT SDKVersion) {
+static IDirect3D9* WINAPI s_myCreateD3D9IfFcn(UINT SDKVersion) {
 	return new Direct3D9Wrapper(s_realCreateD3D9IfFcn(SDKVersion));
 }
+
+SmhSettings g_shmSettings = {};
+SocketSettings g_socketSettings = {};
 
 static void readSettingsFromFile() {
 
@@ -52,19 +52,14 @@ static void readSettingsFromFile() {
 	g_socketSettings.max_kbps = g_socketSettings.max_kbps <= 0 ? 100 * 1024 : g_socketSettings.max_kbps;
 }
 
-#ifdef __cplusplus
 extern "C" {
-#endif
-
-DLLEXPORT BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+__declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
-		DisableThreadLibraryCalls(hModule);
+		//DisableThreadLibraryCalls(hModule);
 		readSettingsFromFile();
-		s_realCreateD3D9IfFcn = (CreateD3D9DevFcn) DetourFunction((PBYTE) Direct3DCreate9, (PBYTE) Mine_Direct3DCreate9);
+		//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)DetourFunction((PBYTE)Direct3DCreate9, (PBYTE)s_myCreateD3D9IfFcn);
+		s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)s_myCreateD3D9IfFcn);
 	}
 	return true;
 }
-
-#ifdef __cplusplus
 }
-#endif

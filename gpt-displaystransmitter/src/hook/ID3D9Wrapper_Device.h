@@ -132,15 +132,15 @@ public:
 	STDMETHOD(DeletePatch)(THIS_ UINT Handle) ;
 	STDMETHOD(CreateQuery)(THIS_ D3DQUERYTYPE Type,IDirect3DQuery9** ppQuery) ;
 
-	IDirect3DDevice9* Direct3DDevice9;
-	IDirect3D9* Direct3D9;
+	IDirect3DDevice9* m_device;
+	IDirect3D9* m_d3d;
 	UINT m_Stride;
 
 private:
-	IDirect3DSurface9 * pSrcVramcSurface;
-	IDirect3DSurface9 * pBufferVramSurface;
+	IDirect3DSurface9 * m_srcVramcSurface;
+	IDirect3DSurface9 * m_middleBufferSurface;
 	IDirect3DSurface9 * pSysRamSurface;
-	bool downloadedThisFrame;
-	int comRefCount;
+	bool m_downloadedThisFrame;
+	int m_comRefCount;
 
 };

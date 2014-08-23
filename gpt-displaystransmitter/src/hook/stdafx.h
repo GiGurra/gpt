@@ -1,13 +1,13 @@
 #pragma once
 
 #define _CRT_SECURE_NO_WARNINGS 1
-#define DLLEXPORT __declspec(dllexport)
 #define DIRECTINPUT_VERSION 0x0900
 #define _WIN32_WINNT 0x0500
 
-#include "stdlib.h"
-#include "stdio.h"
-#include "string.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 void logToTestFileX(const char * str);
 void logToTestFileNX(const double d);
@@ -40,3 +40,10 @@ typedef struct {
 
 extern SmhSettings g_shmSettings;
 extern SocketSettings g_socketSettings;
+
+void *detourFunction(uint8_t *orig, uint8_t *hook, int len = 5);
+
+template <typename T>
+static int release(T * item) {
+	return item ? item->Release() : 0;
+}

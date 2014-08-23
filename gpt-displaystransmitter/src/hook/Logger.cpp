@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "windows.h"
 
-static HANDLE s_mutex = CreateMutex(NULL, FALSE, NULL);
-static FILE * pFile = NULL;
-
 void logToTestFileX(const char * str) {
+	static HANDLE s_mutex = CreateMutex(NULL, FALSE, NULL);
+	static FILE * pFile = NULL;
 	if (str != NULL && strlen(str) > 0) {
 		WaitForSingleObject(s_mutex, INFINITE);
 		pFile = fopen("hook.log", "a");
