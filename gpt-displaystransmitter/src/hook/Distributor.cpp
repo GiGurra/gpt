@@ -18,7 +18,6 @@
 
 using se::gigurra::gpt::model::displays::common::StreamMsg;
 using se::gigurra::gpt::model::ClassRegistry;
-using se::culvertsoft::mnet::DataMessage;
 
 /******************************************************************************
  *
@@ -58,15 +57,11 @@ static StreamMsg createHighLvlMsg(
 		.setData(std::vector<char>(frameData, frameData + frameSize));
 }
 
-static DataMessage wrapMsg(const StreamMsg& msg) {
-	static mnet::MNetSerializer<ClassRegistry> highLevelSerializer;
-	return DataMessage().setBinaryData(highLevelSerializer.writeBinary(msg));
-}
-
 static void threadFunc(volatile void * src, const int width, const int height) {
 	static const std::string& myNetworkName = "gpt-disp-transmitter";
 	static const std::string& tgtNetworkName = "gpt-disp-receiver";
 	static unsigned char s_compressBuffer[10 * 1024 * 1024];
+	static mnet::MNetSerializer<ClassRegistry> serializer;
 	static tjhandle jpgCompressor = tjInitCompress();
 
 	auto _qtApp = ensureQtAppOrCreateNew(0, 0);
@@ -92,14 +87,12 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 				const int res = tjCompress2(jpgCompressor, (unsigned char *)src, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
 				if (res == 0) {
 
-					DataMessage lowLevelMsg = wrapMsg(createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height));
+					const StreamMsg& msg = createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height);
 
 					for (auto& client : clients) {
-						if (client->isConnected()) {
-							for (const auto& route : client->getRoutes()) {
-								if (route.name() == tgtNetworkName) {
-									client->send(lowLevelMsg.setTargetId(route.details().getSenderId()));
-								}
+						for (const auto& route : client->getRoutes()) {
+							if (client->isConnected() && route.name() == tgtNetworkName) {
+								client->sendBinary(serializer.writeBinary(msg), route.id());
 							}
 						}
 					}
