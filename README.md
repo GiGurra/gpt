@@ -15,5 +15,6 @@ GPT depends on:
   * VS2013 (redist)
   * MS Detours
   * Python
+  * JNA
 
 and is released under GPL v2.
