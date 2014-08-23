@@ -4,10 +4,6 @@
 	<Types>
 		<StreamReceiverCfg>
 			<displays type="list[StreamDisplay]">[]</displays>
-			<useShm type="bool">false</useShm>
-			<shmName type="string">no_shm</shmName>
-			<shmWidth type="int32">0</shmWidth>
-			<shmHeight type="int32">0</shmHeight>
 		</StreamReceiverCfg>
 		<StreamDisplay>
 			<name type="string">no_display</name>

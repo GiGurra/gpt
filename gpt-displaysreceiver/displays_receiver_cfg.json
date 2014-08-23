@@ -13,7 +13,7 @@
 				"height": 0.375
 			},
 			"target": {
-				"x": 2261.0,
+				"x": 0.0,
 				"y": 50.0,
 				"width": 680.0,
 				"height": 680.0
@@ -31,7 +31,7 @@
 				"height": 0.375
 			},
 			"target": {
-				"x": 3975.0,
+				"x": 397.0,
 				"y": 50.0,
 				"width": 680.0,
 				"height": 680.0
@@ -91,9 +91,5 @@
 				"height": 70.0
 			}
 		}
-	],
-	"useShm": false,
-	"shmName": "no_shm",
-	"shmWidth": 0,
-	"shmHeight": 0
+	]
 }

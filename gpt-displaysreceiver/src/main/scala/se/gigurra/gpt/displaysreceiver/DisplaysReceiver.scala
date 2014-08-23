@@ -2,7 +2,6 @@ package se.gigurra.gpt.displaysreceiver
 
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
-import java.awt.image.DataBufferInt
 
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.JavaConversions.bufferAsJavaList
@@ -20,7 +19,6 @@ import se.gigurra.gpt.common.NetworkNames
 import se.gigurra.gpt.common.ReadConfigFile
 import se.gigurra.gpt.common.SaveConfigFile
 import se.gigurra.gpt.common.Serializer
-import se.gigurra.gpt.common.SharedMemory
 import se.gigurra.gpt.model.displays.common.StreamMsg
 import se.gigurra.gpt.model.displays.receiver.StreamReceiverCfg
 
@@ -35,14 +33,24 @@ object DisplaysReceiver {
   var imgHeight = 0
   var lastTcpMsgAt = -10.0
 
+  def mkBlackImg(w: Int, h: Int): BufferedImage = {
+    val out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
+    for (y <- 0 until h) {
+      for (x <- 0 until w) {
+        out.setRGB(x, y, 0)
+      }
+    }
+    out
+  }
+
   def ensureBiSize(w: Int, h: Int) {
     if (imgWidth != w || imgHeight != h) {
       imgWidth = w
       imgHeight = h
       swapChain.resetBuffers(
-        new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB),
-        new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB),
-        new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB))
+        mkBlackImg(w, h),
+        mkBlackImg(w, h),
+        mkBlackImg(w, h))
     }
   }
 
@@ -88,27 +96,24 @@ object DisplaysReceiver {
     }
     println("ok")
 
-    // Start listening on TCP
-    val server = new MNetClient(
+    // Make windows black by default
+    ensureBiSize(1200, 1200)
+    issueRedrawWindows()
+
+    val listener = new MNetClient(
       new WebsockBackendSettings().setListenPort(8051),
       new NodeSettings().setName(NetworkNames.DISP_RECEIVER)) {
-
-      def time() = System.nanoTime() / 1e6
-      var tLast = time
 
       override def handleMessage(msg_in: Message, connection: Connection, route: Route) {
         if (route != null && route.name == NetworkNames.DISP_TRANSMITTER) {
           Serializer.read[StreamMsg](msg_in) match {
             case Some(msg) =>
-              val t = time
-              println(t - tLast)
-              tLast = t
-              println(s"$this got frame ${msg.getFrameNbr}: ${msg.getWidth} x ${msg.getHeight} (${msg.getData.size})")
-            //tjDec.setJPEGImage(msg.getData(), msg.getData().length)
-            // ensureBiSize(tjDec.getWidth(), tjDec.getHeight())
-            // swapChain.paint(tjDec.decompress(_, 0))
-            // issueRedrawWindows()
-            case _ => println("But was either not a DataMessage or had no binary data")
+              tjDec.setJPEGImage(msg.getData, msg.getData.size)
+              ensureBiSize(tjDec.getWidth, tjDec.getHeight)
+              swapChain.paint(tjDec.decompress(_, 0))
+              issueRedrawWindows()
+            case _ =>
+              println("But was either not a DataMessage or had no binary data")
           }
         }
       }
@@ -116,39 +121,9 @@ object DisplaysReceiver {
       start()
     }
 
-    var sm = if (settings.getUseShm) new SharedMemory(settings.getShmName, 0, false) else null
-    while (allVisible(windows)) {
+    while (allVisible(windows)) { Thread.sleep(100) }
 
-      if (System.nanoTime() / 1e9 - lastTcpMsgAt < 2.0) {
-        Thread.sleep(100)
-      } else {
-
-        if (settings.getUseShm) {
-          if (sm.valid) {
-
-            ensureBiSize(settings.getShmWidth, settings.getShmHeight)
-
-            swapChain.paint { backBuffer =>
-              val trgData = backBuffer.getRaster().getDataBuffer().asInstanceOf[DataBufferInt].getData()
-              sm.flush()
-              sm.read(trgData, settings.getShmWidth * settings.getShmHeight)
-            }
-
-            issueRedrawWindows()
-            Thread.sleep(19)
-
-          } else {
-            sm = new SharedMemory(settings.getShmName, 0, false)
-            Thread.sleep(100)
-          }
-        }
-
-      }
-
-    }
-
-    // Kill recv server
-    server.stop()
+    listener.stop()
 
     // Save xml
     print("Closing displays and saving settings to " + DEFAULT_SETTINGS_FILE_NAME + "...")

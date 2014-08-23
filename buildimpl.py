@@ -12,8 +12,8 @@ def clean():
     check_call("python build.py -c", cwd="gpt-displaystransmitter", shell=True)
     
 def build():
-    build_cpp()
     generate_model()
+    build_cpp()
     check_call("sbt compile package publish-local assembly", shell=True)
     check_call("python build.py -b", cwd="gpt-displaystransmitter", shell=True)
 
