@@ -35,15 +35,16 @@ object DisplaysReceiver {
 
   def mkBlackImg(w: Int, h: Int): BufferedImage = {
     val out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
-    for (y <- 0 until h) {
-      for (x <- 0 until w) {
-        out.setRGB(x, y, 0)
-      }
+    for (
+      y <- 0 until h;
+      x <- 0 until w
+    ) {
+      out.setRGB(x, y, 0)
     }
     out
   }
 
-  def ensureBiSize(w: Int, h: Int) {
+  def prepareSwapChain(w: Int, h: Int) {
     if (imgWidth != w || imgHeight != h) {
       imgWidth = w
       imgHeight = h
@@ -52,14 +53,6 @@ object DisplaysReceiver {
         mkBlackImg(w, h),
         mkBlackImg(w, h))
     }
-  }
-
-  def issueRedrawWindows() {
-    windows.foreach(_.issueUpdate())
-  }
-
-  def allVisible(windows: ArrayBuffer[RenderWindow]): Boolean = {
-    windows.forall(_.isAlive)
   }
 
   def main(args: Array[String]) {
@@ -97,8 +90,8 @@ object DisplaysReceiver {
     println("ok")
 
     // Make windows black by default
-    ensureBiSize(1200, 1200)
-    issueRedrawWindows()
+    prepareSwapChain(1200, 1200)
+    windows.foreach(_.issueUpdate())
 
     val listener = new MNetClient(
       new WebsockBackendSettings().setListenPort(8051),
@@ -109,9 +102,9 @@ object DisplaysReceiver {
           Serializer.read[StreamMsg](msg_in) match {
             case Some(msg) =>
               tjDec.setJPEGImage(msg.getData, msg.getData.size)
-              ensureBiSize(tjDec.getWidth, tjDec.getHeight)
+              prepareSwapChain(tjDec.getWidth, tjDec.getHeight)
               swapChain.paint(tjDec.decompress(_, 0))
-              issueRedrawWindows()
+              windows.foreach(_.issueUpdate())
             case _ =>
               println("But was either not a DataMessage or had no binary data")
           }
@@ -121,7 +114,7 @@ object DisplaysReceiver {
       start()
     }
 
-    while (allVisible(windows)) { Thread.sleep(100) }
+    while (windows.forall(_.isAlive)) { Thread.sleep(100) }
 
     listener.stop()
 
