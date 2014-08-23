@@ -1,22 +1,23 @@
 #include "stdafx.h"
-#include "windows.h"
+#include <memory>
+#include <mutex>
 
-void logToTestFileX(const char * str) {
-	static HANDLE s_mutex = CreateMutex(NULL, FALSE, NULL);
-	static FILE * pFile = NULL;
-	if (str != NULL && strlen(str) > 0) {
-		WaitForSingleObject(s_mutex, INFINITE);
-		pFile = fopen("hook.log", "a");
-		if (pFile) {
-			fprintf(pFile, "%s\n", str);
-			fclose(pFile);
-		}
-		ReleaseMutex(s_mutex);
-	}
+void logText(const char * str) {
+
+	if (!str || strlen(str) == 0)
+		return;
+
+	static std::mutex mutex;
+
+	std::lock_guard<std::mutex> lock(mutex);
+	std::shared_ptr<FILE> file(fopen("hook.log", "a"), fclose);
+
+	if (file)
+		fprintf(file.get(), "%s\n", str);
 }
 
-void logToTestFileNX(const double d) {
+void logNumber(const double d) {
 	char buf[32] = { };
 	sprintf(buf, "%f", d);
-	logToTestFileX(buf);
+	logText(buf);
 }

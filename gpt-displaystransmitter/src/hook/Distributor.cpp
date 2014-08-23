@@ -61,14 +61,14 @@ static void displaysSockTransmit(const char * pSrcData, const int nBytes) {
 	if (!wsaUp) {
 		WSAData wsaData;
 		wsaUp = WSAStartup(MAKEWORD(2,2), &wsaData) == NO_ERROR;
-		logToTestFileX("WSAStartup");
+		logText("WSAStartup");
 	}
 
 	if (wsaUp && !tcpUp) {
 		s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // create the socket
 		tcpUp = s != INVALID_SOCKET;
 		if (tcpUp) {
-			logToTestFileX("socket created");
+			logText("socket created");
 		}
 	}
 
@@ -81,7 +81,7 @@ static void displaysSockTransmit(const char * pSrcData, const int nBytes) {
 		if (tcpConnected) {
 			const int noDelaySetting = TRUE;
 			setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (const char*) &noDelaySetting, sizeof(int));
-			logToTestFileX("socket connect()");
+			logText("socket connect()");
 		}
 	}
 
@@ -95,7 +95,7 @@ static void displaysSockTransmit(const char * pSrcData, const int nBytes) {
 			displaysSockTransmit(pSrcData + sendResult, nBytes - sendResult);
 		}
 	} else {
-		logToTestFileX("Unable to set up tcp talker");
+		logText("Unable to set up tcp talker");
 	}
 
 }
@@ -151,7 +151,7 @@ static DWORD WINAPI thrdFnc(LPVOID lpThreadParameter) {
 
 	const unsigned long minDt = 1000 / g_socketSettings.max_hz;
 
-	logToTestFileX("slave thread started");
+	logText("slave thread started");
 	while (s_toLive) {
 
 		// Write to SHM
@@ -200,7 +200,7 @@ static DWORD WINAPI thrdFnc(LPVOID lpThreadParameter) {
 	}
 	MemoryBarrier();
 	s_alive = false;
-	logToTestFileX("slave thread quit");
+	logText("slave thread quit");
 	return TRUE;
 }
 
@@ -241,7 +241,7 @@ void startTexSharer(void * src, const int width, const int height, const int byt
 			s_threadId = CreateThread(NULL, 0, &thrdFnc, NULL, 0, 0);
 		}
 	} else {
-		logToTestFileX("Unable to create shared memory for writing");
+		logText("Unable to create shared memory for writing");
 	}
 }
 

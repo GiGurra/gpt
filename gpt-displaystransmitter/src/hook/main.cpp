@@ -5,6 +5,7 @@
 #include "detours.h"
 #include "ID3D9Wrapper.h"
 #pragma comment(lib, "detours.lib")
+#pragma comment(lib,"d3d9.lib")
 
 typedef IDirect3D9 *(WINAPI*CreateD3D9DevFcn)(UINT SDKVersion);
 static CreateD3D9DevFcn s_realCreateD3D9IfFcn = NULL;
@@ -35,18 +36,18 @@ static void readSettingsFromFile() {
 	g_socketSettings.max_hz = GetPrivateProfileInt("falconhook_socket", "max_hz", 0, fullPathName);
 	g_socketSettings.jpegQual = GetPrivateProfileInt("falconhook_socket", "jpegQual", 0, fullPathName);
 
-	logToTestFileX("\n  Read from config file:");
-	logToTestFileX(fullPathName);
-	logToTestFileX("\n  falconhook_shm");
-	logToTestFileNX(g_shmSettings.active);
-	logToTestFileX(g_shmSettings.name);
-	logToTestFileX("\n  falconhook_socket:");
-	logToTestFileNX(g_socketSettings.active);
-	logToTestFileX(g_socketSettings.addrStr);
-	logToTestFileNX(g_socketSettings.port);
-	logToTestFileNX(g_socketSettings.max_kbps);
-	logToTestFileNX(g_socketSettings.max_hz);
-	logToTestFileNX(g_socketSettings.jpegQual);
+	logText("\n  Read from config file:");
+	logText(fullPathName);
+	logText("\n  falconhook_shm");
+	logNumber(g_shmSettings.active);
+	logText(g_shmSettings.name);
+	logText("\n  falconhook_socket:");
+	logNumber(g_socketSettings.active);
+	logText(g_socketSettings.addrStr);
+	logNumber(g_socketSettings.port);
+	logNumber(g_socketSettings.max_kbps);
+	logNumber(g_socketSettings.max_hz);
+	logNumber(g_socketSettings.jpegQual);
 
 	// These must at least be something...else we stall the distributor thread..which means we will hang upon exiting a mission
 	g_socketSettings.max_hz = g_socketSettings.max_hz <= 0 ? 50 : g_socketSettings.max_hz;

@@ -1,6 +1,7 @@
+#pragma once
+
 #include "stdafx.h"
 #include "d3d9.h"
-#pragma comment(lib,"d3d9.lib")
 
 class Direct3DDevice9Wrapper : public IDirect3DDevice9 {
 

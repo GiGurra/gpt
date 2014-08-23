@@ -5,12 +5,10 @@
 #define _WIN32_WINNT 0x0500
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
-void logToTestFileX(const char * str);
-void logToTestFileNX(const double d);
+void logText(const char * str);
+void logNumber(const double d);
 void startTexSharer(void * src, const int width, const int height, const int bytesPerPixel);
 void killTexSharer();
 
