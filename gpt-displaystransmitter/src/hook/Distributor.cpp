@@ -15,6 +15,10 @@
 #include <Windows.h>
 #include "time.h"
 
+using se::gigurra::gpt::model::displays::common::StreamMsg;
+using se::gigurra::gpt::model::ClassRegistry;
+using se::culvertsoft::mnet::DataMessage;
+
 /******************************************************************************
  *
  *
@@ -40,6 +44,24 @@ static QSharedPointer<QCoreApplication> ensureQtAppOrCreateNew(int argc, char *a
 	}
 }
 
+static StreamMsg createHighLvlMsg(
+		const int frameNbr,
+		const char * frameData,
+		const int frameSize,
+		const int width,
+		const int height ) {
+	return StreamMsg()
+		.setFrameNbr(frameNbr)
+		.setWidth(width)
+		.setHeight(height)
+		.setData(std::vector<char>(frameData, frameData + frameSize));
+}
+
+static DataMessage wrapMsg(const StreamMsg& msg) {
+	static mnet::MNetSerializer<ClassRegistry> highLevelSerializer;
+	return DataMessage().setBinaryData(highLevelSerializer.writeBinary(msg));
+}
+
 static void threadFunc(volatile void * src, const int width, const int height) {
 	static const std::string& myNetworkName = "gpt-disp-transmitter";
 	static const std::string& tgtNetworkName = "gpt-disp-receiver";
@@ -47,7 +69,6 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 	static unsigned char s_compressBuffer[10 * 1024 * 1024];
 	static auto _qtApp = ensureQtAppOrCreateNew(0, 0);
 	static tjhandle jpgCompressor = tjInitCompress();
-	static se::culvertsoft::mnet::DataMessage msg;
 
 	logText("Enter threadFunc");
 		
@@ -57,6 +78,7 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 		clients.push_back(std::make_shared<mnet::MNetClient>(url, myNetworkName));
 	}
 
+	int frameNbr = 0;
 	QTimer timer;
 	QEventLoop eventLoop;
 	QObject::connect(&timer, &QTimer::timeout, [&] {
@@ -66,14 +88,14 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 			unsigned char * p = s_compressBuffer;
 			const int res = tjCompress2(jpgCompressor, (unsigned char *)src, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
 			if (res == 0) {
-				std::vector<char>& buffer = msg.getBinaryDataMutable();
-				buffer.resize(frameSize);
-				memcpy(buffer.data(), s_compressBuffer, frameSize);
+
+				DataMessage lowLevelMsg = wrapMsg(createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height));
+				
 				for (auto& client : clients) {
 					if (client->isConnected()) {
 						for (const auto& route : client->getRoutes()) {
 							if (route.name() == tgtNetworkName) {
-								client->send(msg.setTargetId(route.details().getSenderId()));
+								client->send(lowLevelMsg.setTargetId(route.details().getSenderId()));
 							}
 						}
 					}
