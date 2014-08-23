@@ -117,7 +117,6 @@ object DisplaysReceiver {
 
     listener.stop()
 
-    // Save xml
     print("Closing displays and saving settings to " + DEFAULT_SETTINGS_FILE_NAME + "...")
     for (rw <- windows) {
       val wset = settings.getDisplays().find(_.getName() == rw.title).get
