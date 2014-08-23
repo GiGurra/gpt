@@ -31,7 +31,6 @@ object DisplaysReceiver {
   val swapChain = new TripleBuffer[BufferedImage](new Array[BufferedImage](3), false)
   var imgWidth = 0
   var imgHeight = 0
-  var lastTcpMsgAt = -10.0
 
   def mkBlackImg(w: Int, h: Int): BufferedImage = {
     val out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
