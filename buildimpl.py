@@ -9,13 +9,11 @@ def clean():
     rmFolder("gpt-common/src_generated")
     rmFolder("gpt-displaystransmitter/target")
     check_call("sbt clean", shell=True)
-    check_call("python build.py -c", cwd="gpt-displaystransmitter", shell=True)
     
 def build():
     generate_model()
     build_cpp()
     check_call("sbt compile package publish-local assembly", shell=True)
-    check_call("python build.py -b", cwd="gpt-displaystransmitter", shell=True)
 
 def test():
     sbt_test(".")
