@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "common.h"
 #include <Windows.h>
 
 #define JMP32_SZ 5 // the size of JMP <address>

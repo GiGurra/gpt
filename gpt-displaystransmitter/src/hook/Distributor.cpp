@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "common.h"
 #include "time.h"
 
 /******************************************************************************
@@ -52,7 +52,7 @@ typedef struct {
 } JpgMsg;
 
 static void displaysSockTransmit(const char * pSrcData, const int nBytes) {
-
+	/*
 	static bool wsaUp = false;
 	static bool tcpUp = false;
 	static bool tcpConnected = false;
@@ -97,7 +97,7 @@ static void displaysSockTransmit(const char * pSrcData, const int nBytes) {
 	} else {
 		logText("Unable to set up tcp talker");
 	}
-
+	*/
 }
 
 static void transmitUdMsg(const unsigned char * srcData, const unsigned int imageDataSz) {
@@ -142,26 +142,26 @@ static void transmitUdMsg(const unsigned char * srcData, const unsigned int imag
  ******************************************************************************/
 
 static DWORD WINAPI thrdFnc(LPVOID lpThreadParameter) {
-
+	/*
 	static tjhandle jpgCompressor = NULL;
 
 	if (jpgCompressor == NULL) {
 		jpgCompressor = tjInitCompress();
 	}
 
-	const unsigned long minDt = 1000 / g_socketSettings.max_hz;
+	const unsigned long minDt = 1000 / g_settings.getMaxFps();
 
 	logText("slave thread started");
 	while (s_toLive) {
 
 		// Write to SHM
-		if (g_shmSettings.active) {
+		if (g_settings.getUseShm()) {
 			memcpy(s_trgPtr, s_srcPtr, s_nBytes);
 			Sleep(10);
 		}
 
 		// Send over tcp
-		else if (g_socketSettings.active) {
+		else if (g_settings.getUseTcp()) {
 
 			static unsigned char jpgData[PRE_ALLOC_SZ];
 			static unsigned long tLastTransmission = 0;
@@ -172,7 +172,7 @@ static DWORD WINAPI thrdFnc(LPVOID lpThreadParameter) {
 			if (curTime - tLastTransmission > minDt) {
 
 				// Consider maximum bandwidth
-				while ((g_socketSettings.max_kbps * (clock() - tLastTransmission)) < (lastPayLoad * 8)) {
+				while ((g_settings.getMaxBwBps()/1024 * (clock() - tLastTransmission)) < (lastPayLoad * 8)) {
 					Sleep(1);
 				}
 
@@ -201,6 +201,7 @@ static DWORD WINAPI thrdFnc(LPVOID lpThreadParameter) {
 	MemoryBarrier();
 	s_alive = false;
 	logText("slave thread quit");
+	*/
 	return TRUE;
 }
 
@@ -219,10 +220,10 @@ void startTexSharer(void * src, const int width, const int height, const int byt
 
 	if (s_trgPtr == NULL) {
 		if (shmHandle == NULL) {
-			shmHandle = OpenFileMappingA(FILE_MAP_WRITE, false, g_shmSettings.name);
+			shmHandle = OpenFileMappingA(FILE_MAP_WRITE, false, g_settings.getShmName().c_str());
 		}
 		if (shmHandle == NULL) {
-			shmHandle = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, newSize, g_shmSettings.name);
+			shmHandle = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, newSize, g_settings.getShmName().c_str());
 		}
 		if (shmHandle != NULL) {
 			s_trgPtr = MapViewOfFile(shmHandle, FILE_MAP_WRITE, 0, 0, 0);

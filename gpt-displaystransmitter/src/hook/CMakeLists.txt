@@ -38,9 +38,9 @@ SET (LIB_TYPE SHARED)
 include_directories(    $ENV{MGEN_INSTALL_PATH}/include
                         $ENV{MNET_INSTALL_PATH}/include
                         ${CMAKE_CURRENT_SOURCE_DIR}
-                        ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg
-                        ${CMAKE_CURRENT_SOURCE_DIR}/../../../gpt-common/src_generated/main/cpp   )
+                        ${CMAKE_CURRENT_SOURCE_DIR}/../../../gpt-common/src_generated/main/cpp	)
+						# ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours   
 
 add_library(            ${PROJECT_NAME} ${LIB_TYPE}
 						detour.cpp
@@ -51,10 +51,10 @@ add_library(            ${PROJECT_NAME} ${LIB_TYPE}
                         ID3D9Wrapper_Device.h
                         Logger.cpp
                         main.cpp
-                        stdafx.h     )
+                        common.h     )
 
 target_link_libraries(  ${PROJECT_NAME} 
-                        ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours/detours.lib
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/jpeg.lib
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/turbojpeg.lib
                         Qt5::WebSockets     )
+                        # ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours/detours.lib

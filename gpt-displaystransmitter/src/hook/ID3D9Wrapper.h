@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "common.h"
 #include "d3d9.h"
 
 class Direct3D9Wrapper : public IDirect3D9

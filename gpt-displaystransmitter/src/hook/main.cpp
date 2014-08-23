@@ -1,67 +1,69 @@
-#include <se/gigurra/gpt/model/ClassRegistry.cpp>
 
-#include "stdafx.h"
-#include "windows.h"
-#include "detours.h"
+/***********************************************
+*
+*				INCLUDES & DEFS
+*
+************************************************/
+
+#include <se/gigurra/gpt/model/ClassRegistry.cpp> // Unity build for generated data model
+#include <se/culvertsoft/mnet/ClassRegistry.cpp> // Unity build for generated data model
+#include "common.h"
 #include "ID3D9Wrapper.h"
-#pragma comment(lib, "detours.lib")
-#pragma comment(lib,"d3d9.lib")
+
+#pragma comment(lib, "d3d9.lib")
 
 typedef IDirect3D9 *(WINAPI*CreateD3D9DevFcn)(UINT SDKVersion);
+
+/***********************************************
+*
+*				GLOBALS & STATICS
+*
+************************************************/
+static StreamTransmitterCfg readConfig();
+static IDirect3D9* WINAPI myCreateD3D9IfFcn(UINT SDKVersion);
+
+static const std::string s_cfgFileName = "gpt_displaystransmitter_cfg.json";
 static CreateD3D9DevFcn s_realCreateD3D9IfFcn = NULL;
+const StreamTransmitterCfg g_settings = readConfig();
 
-static IDirect3D9* WINAPI s_myCreateD3D9IfFcn(UINT SDKVersion) {
-	return new Direct3D9Wrapper(s_realCreateD3D9IfFcn(SDKVersion));
-}
-
-SmhSettings g_shmSettings = {};
-SocketSettings g_socketSettings = {};
-
-static void readSettingsFromFile() {
-
-	char fullPathName[1025] = { };
-	GetCurrentDirectoryA(900, fullPathName);
-	strcat(fullPathName, "\\DisplaysTransmitter.ini");
-	// Read SHM settings
-	g_shmSettings.active = GetPrivateProfileInt("falconhook_shm", "active", 0, fullPathName) != 0;
-	GetPrivateProfileStringA("falconhook_shm", "name", "GiGurraTexturesSharedMemoryArea", g_shmSettings.name, 128, fullPathName);
-	g_shmSettings.pad = 0;
-
-	// Read socket settings
-	g_socketSettings.active = GetPrivateProfileInt("falconhook_socket", "active", 0, fullPathName) != 0;
-	GetPrivateProfileStringA("falconhook_socket", "addr", "127.0.0.1", g_socketSettings.addrStr, 128, fullPathName);
-	g_socketSettings.pad = 0;
-	g_socketSettings.port = GetPrivateProfileInt("falconhook_socket", "port", 0, fullPathName);
-	g_socketSettings.max_kbps = GetPrivateProfileInt("falconhook_socket", "max_kbps", 0, fullPathName);
-	g_socketSettings.max_hz = GetPrivateProfileInt("falconhook_socket", "max_hz", 0, fullPathName);
-	g_socketSettings.jpegQual = GetPrivateProfileInt("falconhook_socket", "jpegQual", 0, fullPathName);
-
-	logText("\n  Read from config file:");
-	logText(fullPathName);
-	logText("\n  falconhook_shm");
-	logNumber(g_shmSettings.active);
-	logText(g_shmSettings.name);
-	logText("\n  falconhook_socket:");
-	logNumber(g_socketSettings.active);
-	logText(g_socketSettings.addrStr);
-	logNumber(g_socketSettings.port);
-	logNumber(g_socketSettings.max_kbps);
-	logNumber(g_socketSettings.max_hz);
-	logNumber(g_socketSettings.jpegQual);
-
-	// These must at least be something...else we stall the distributor thread..which means we will hang upon exiting a mission
-	g_socketSettings.max_hz = g_socketSettings.max_hz <= 0 ? 50 : g_socketSettings.max_hz;
-	g_socketSettings.max_kbps = g_socketSettings.max_kbps <= 0 ? 100 * 1024 : g_socketSettings.max_kbps;
-}
+/***********************************************
+*
+*				DLL ENTRY POINT
+*
+************************************************/
 
 extern "C" {
 __declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
 		//DisableThreadLibraryCalls(hModule);
-		readSettingsFromFile();
-		//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)DetourFunction((PBYTE)Direct3DCreate9, (PBYTE)s_myCreateD3D9IfFcn);
-		s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)s_myCreateD3D9IfFcn);
+		//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)DetourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
+		//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
 	}
 	return true;
 }
+}
+
+/***********************************************
+*
+*				HELPERS IMPL
+*
+************************************************/
+
+static StreamTransmitterCfg readConfig() {
+
+	mnet::MNetSerializer<ClassRegistry> serializer;
+	const std::vector<char> cfgFileData = file2Vector(s_cfgFileName);
+
+	StreamTransmitterCfg cfg = !cfgFileData.empty() ?
+		*serializer.readJson<StreamTransmitterCfg>(cfgFileData.data(), cfgFileData.size()) : StreamTransmitterCfg();
+
+	vector2File(s_cfgFileName, serializer.writeJson(cfg));
+
+	return cfg;
+	
+}
+
+
+static IDirect3D9* WINAPI s_myCreateD3D9IfFcn(UINT SDKVersion) {
+	return new Direct3D9Wrapper(s_realCreateD3D9IfFcn(SDKVersion));
 }

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "common.h"
 #include "ID3D9Wrapper.h"
 #include "ID3D9Wrapper_Device.h"
 
