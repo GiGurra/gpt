@@ -12,7 +12,7 @@ GPT depends on:
   * https://github.com/culvertsoft/mnet
   * Qt
   * Java
-  * VS2013 (redist)
+  * VS2013
   * MS Detours
   * Python
   * JNA
