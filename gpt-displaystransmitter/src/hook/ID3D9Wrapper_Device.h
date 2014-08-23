@@ -140,7 +140,7 @@ public:
 private:
 	IDirect3DSurface9 * m_srcVramcSurface;
 	IDirect3DSurface9 * m_middleBufferSurface;
-	IDirect3DSurface9 * pSysRamSurface;
+	IDirect3DSurface9 * m_pSysRamSurface;
 	bool m_downloadedThisFrame;
 	int m_comRefCount;
 

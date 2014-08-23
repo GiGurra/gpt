@@ -22,8 +22,6 @@
  *
  ******************************************************************************/
 
-// These are set by the main thread before starting the slave thread
-static void * s_srcPtr = NULL; // RAM ptr to downloaded frame
 static volatile bool s_toLive = false; // false if slave thread should commit suicide
 
 /******************************************************************************
@@ -42,7 +40,7 @@ static QSharedPointer<QCoreApplication> ensureQtAppOrCreateNew(int argc, char *a
 	}
 }
 
-static void threadFunc(const int width, const int height) {
+static void threadFunc(volatile void * src, const int width, const int height) {
 	static const std::string& myNetworkName = "gpt-disp-transmitter";
 	static const std::string& tgtNetworkName = "gpt-disp-receiver";
 
@@ -66,7 +64,7 @@ static void threadFunc(const int width, const int height) {
 
 			unsigned long frameSize = sizeof(s_compressBuffer);
 			unsigned char * p = s_compressBuffer;
-			const int res = tjCompress2(jpgCompressor, (unsigned char *)s_srcPtr, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
+			const int res = tjCompress2(jpgCompressor, (unsigned char *)src, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
 			if (res == 0) {
 				std::vector<char>& buffer = msg.getBinaryDataMutable();
 				buffer.resize(frameSize);
@@ -106,9 +104,9 @@ static std::shared_ptr<std::thread> s_thread;
 void startTexSharer(void * src, const int width, const int height, const int bytesPerPixel) {
 	if (!s_thread) {
 		s_toLive = true;
-		s_thread = std::make_shared<std::thread>(threadFunc, width, height);
+		s_thread = std::make_shared<std::thread>(threadFunc, src, width, height);
 	} else {
-		logText("ERROR: startTexSharer called twice in a row!");
+		logText("ERROR: startTexSharer: called twice in a row!");
 	}
 }
 

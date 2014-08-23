@@ -15,6 +15,7 @@ Direct3DDevice9Wrapper::Direct3DDevice9Wrapper(
 		m_d3d(pDirect3D9),
 		m_srcVramcSurface(0),
 		m_middleBufferSurface(0),
+		m_pSysRamSurface(0),
 		m_comRefCount(1),
 		m_downloadedThisFrame(false) {
 }
@@ -38,7 +39,7 @@ ULONG Direct3DDevice9Wrapper::Release() {
 	m_comRefCount--;
 	if (m_comRefCount == 0) {
 		killTexSharer();
-		release(pSysRamSurface);
+		release(m_pSysRamSurface);
 		release(m_middleBufferSurface);
 		delete this;
 	}
@@ -60,18 +61,18 @@ HRESULT Direct3DDevice9Wrapper::SetRenderTarget(DWORD RenderTargetIndex, IDirect
 			m_srcVramcSurface = pRenderTarget;
 			CreateRenderTarget(srcVramSurfDescr.Width, srcVramSurfDescr.Height, srcVramSurfDescr.Format,
 					srcVramSurfDescr.MultiSampleType, srcVramSurfDescr.MultiSampleQuality, false, &m_middleBufferSurface, NULL);
-			if (pSysRamSurface == NULL) {
+			if (m_pSysRamSurface == NULL) {
 				CreateOffscreenPlainSurface(srcVramSurfDescr.Width, srcVramSurfDescr.Height, srcVramSurfDescr.Format,
-						D3DPOOL_SYSTEMMEM, &pSysRamSurface, NULL);
+					D3DPOOL_SYSTEMMEM, &m_pSysRamSurface, NULL);
 				D3DLOCKED_RECT rect;
-				pSysRamSurface->LockRect(&rect, NULL, D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_READONLY);
+				m_pSysRamSurface->LockRect(&rect, NULL, D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_READONLY);
 				startTexSharer(rect.pBits, srcVramSurfDescr.Width, srcVramSurfDescr.Height, 4);
-				pSysRamSurface->UnlockRect();
+				m_pSysRamSurface->UnlockRect();
 			}
 		}
 	} else if (!m_downloadedThisFrame && pRenderTarget == m_srcVramcSurface) {
 		m_downloadedThisFrame = true;
-		GetRenderTargetData(m_middleBufferSurface, pSysRamSurface);
+		GetRenderTargetData(m_middleBufferSurface, m_pSysRamSurface);
 	}
 	return m_device->SetRenderTarget(RenderTargetIndex, pRenderTarget);
 }

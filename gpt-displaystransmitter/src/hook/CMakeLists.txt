@@ -43,6 +43,7 @@ include_directories(    ${MGEN_INSTALL_PATH}/include
                         ${MNET_INSTALL_PATH}/include
                         ${CMAKE_CURRENT_SOURCE_DIR}
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg
+                        ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../../gpt-common/src_generated/main/cpp	)
 
 add_library(            ${PROJECT_NAME} ${LIB_TYPE}
@@ -61,5 +62,6 @@ add_library(            ${PROJECT_NAME} ${LIB_TYPE}
 
 target_link_libraries(  ${PROJECT_NAME} 
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/jpeg.lib
+                        ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours/detours.lib
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/turbojpeg.lib
                         Qt5::WebSockets     )

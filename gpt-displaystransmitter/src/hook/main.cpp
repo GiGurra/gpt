@@ -10,6 +10,9 @@
 #include "common.h"
 #include "ID3D9Wrapper.h"
 
+#include <Windows.h>
+#include <detours.h>
+
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "turbojpeg.lib")
@@ -35,13 +38,15 @@ const StreamTransmitterCfg g_settings = readConfig();
 ************************************************/
 
 extern "C" {
-__declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
-	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
-		//DisableThreadLibraryCalls(hModule);
-		s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
+	__declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
+		logText("hooking process");
+		if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
+			DisableThreadLibraryCalls(hModule);
+			//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
+			s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)DetourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
+		}
+		return true;
 	}
-	return true;
-}
 }
 
 /***********************************************
@@ -66,5 +71,6 @@ static StreamTransmitterCfg readConfig() {
 
 
 static IDirect3D9* WINAPI myCreateD3D9IfFcn(UINT SDKVersion) {
+	logText("Calling hooked d3dCreate");
 	return new Direct3D9Wrapper(s_realCreateD3D9IfFcn(SDKVersion));
 }
