@@ -88,11 +88,12 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 				if (res == 0) {
 
 					const StreamMsg& msg = createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height);
+					const std::vector<char>& msgData = serializer.writeBinary(msg);
 
 					for (auto& client : clients) {
 						for (const auto& route : client->getRoutes()) {
 							if (client->isConnected() && route.name() == tgtNetworkName) {
-								client->sendBinary(serializer.writeBinary(msg), route.id());
+								client->sendBinary(msgData, route.id());
 							}
 						}
 					}
