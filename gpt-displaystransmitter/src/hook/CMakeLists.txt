@@ -47,7 +47,6 @@ include_directories(    ${MGEN_INSTALL_PATH}/include
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../../gpt-common/src_generated/main/cpp	)
 
 add_library(            ${PROJECT_NAME} ${LIB_TYPE}
-						detour.cpp
                         Distributor.cpp
                         ID3D9Wrapper.cpp
                         ID3D9Wrapper.h

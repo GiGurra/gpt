@@ -42,7 +42,6 @@ extern "C" {
 		logText("hooking process");
 		if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
 			DisableThreadLibraryCalls(hModule);
-			//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
 			s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)DetourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
 		}
 		return true;
