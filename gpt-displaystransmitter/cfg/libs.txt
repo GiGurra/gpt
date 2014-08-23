@@ -1,3 +1,0 @@
-turbojpeg,
-libgurracpp,
-detours
