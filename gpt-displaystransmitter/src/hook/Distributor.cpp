@@ -72,9 +72,11 @@ static void threadFunc(const int width, const int height) {
 				buffer.resize(frameSize);
 				memcpy(buffer.data(), s_compressBuffer, frameSize);
 				for (auto& client : clients) {
-					for (const auto& route: client->getRoutes()) {
-						if (route.name() == tgtNetworkName) {
-							client->send(msg);
+					if (client->isConnected()) {
+						for (const auto& route : client->getRoutes()) {
+							if (route.name() == tgtNetworkName) {
+								client->send(msg.setTargetId(route.details().getSenderId()));
+							}
 						}
 					}
 				}
