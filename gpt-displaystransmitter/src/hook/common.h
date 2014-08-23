@@ -74,11 +74,6 @@ void startTexSharer(void * src, const int width, const int height, const int byt
 void killTexSharer();
 
 /**
-* Detours a function
-*/
-void *detourFunction(uint8_t *orig, uint8_t *hook, int len = 5);
-
-/**
 * utility for dx release with null checking
 */
 template <typename Releasable>
