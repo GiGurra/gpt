@@ -56,8 +56,7 @@ static void threadFunc(const int width, const int height) {
 	std::vector<std::shared_ptr<mnet::MNetClient>> clients;
 	for (const auto& tgt : g_settings.getTargets()) {
 		const std::string url = std::string("ws://") + tgt.getIp() + std::string(":") + std::to_string(tgt.getPort());
-		clients.push_back(std::shared_ptr<mnet::MNetClient>(
-			new mnet::MNetClient(url, myNetworkName)));
+		clients.push_back(std::make_shared<mnet::MNetClient>(url, myNetworkName));
 	}
 
 	QTimer timer;

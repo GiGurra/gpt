@@ -38,8 +38,7 @@ extern "C" {
 __declspec(dllexport) BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
 		//DisableThreadLibraryCalls(hModule);
-		//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)DetourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
-		//s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
+		s_realCreateD3D9IfFcn = (CreateD3D9DevFcn)detourFunction((PBYTE)Direct3DCreate9, (PBYTE)myCreateD3D9IfFcn);
 	}
 	return true;
 }
@@ -66,6 +65,6 @@ static StreamTransmitterCfg readConfig() {
 }
 
 
-static IDirect3D9* WINAPI s_myCreateD3D9IfFcn(UINT SDKVersion) {
+static IDirect3D9* WINAPI myCreateD3D9IfFcn(UINT SDKVersion) {
 	return new Direct3D9Wrapper(s_realCreateD3D9IfFcn(SDKVersion));
 }
