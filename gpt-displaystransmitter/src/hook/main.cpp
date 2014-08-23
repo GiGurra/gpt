@@ -1,3 +1,5 @@
+#include <se/gigurra/gpt/model/ClassRegistry.cpp>
+
 #include "stdafx.h"
 #include "windows.h"
 #include "detours.h"
@@ -16,13 +18,12 @@ SocketSettings g_socketSettings = {};
 
 static void readSettingsFromFile() {
 
-	char fullPathName[256] = { };
-	GetCurrentDirectoryA(255, fullPathName);
+	char fullPathName[1025] = { };
+	GetCurrentDirectoryA(900, fullPathName);
 	strcat(fullPathName, "\\DisplaysTransmitter.ini");
 	// Read SHM settings
 	g_shmSettings.active = GetPrivateProfileInt("falconhook_shm", "active", 0, fullPathName) != 0;
-	GetPrivateProfileStringA("falconhook_shm", "name", "GiGurraTexturesSharedMemoryArea", g_shmSettings.name, 128,
-			fullPathName);
+	GetPrivateProfileStringA("falconhook_shm", "name", "GiGurraTexturesSharedMemoryArea", g_shmSettings.name, 128, fullPathName);
 	g_shmSettings.pad = 0;
 
 	// Read socket settings

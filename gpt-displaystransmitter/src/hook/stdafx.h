@@ -14,14 +14,6 @@ void logToTestFileNX(const double d);
 void startTexSharer(void * src, const int width, const int height, const int bytesPerPixel);
 void killTexSharer();
 
-#if 0
-#define logToTestFile(a) logToTestFileX(a)
-#define logToTestFileN(a) logToTestFileNX(a)
-#else
-#define logToTestFile(a) 1
-#define logToTestFileN(a) 1
-#endif
-
 typedef struct {
 	bool active;
 	char name[128];
