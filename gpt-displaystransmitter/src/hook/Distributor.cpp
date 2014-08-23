@@ -44,19 +44,6 @@ static QSharedPointer<QCoreApplication> ensureQtAppOrCreateNew(int argc, char *a
 	}
 }
 
-static StreamMsg createHighLvlMsg(
-		const int frameNbr,
-		const char * frameData,
-		const int frameSize,
-		const int width,
-		const int height ) {
-	return StreamMsg()
-		.setFrameNbr(frameNbr)
-		.setWidth(width)
-		.setHeight(height)
-		.setData(std::vector<char>(frameData, frameData + frameSize));
-}
-
 static void threadFunc(volatile void * src, const int width, const int height) {
 	static const std::string& myNetworkName = "gpt-disp-transmitter";
 	static const std::string& tgtNetworkName = "gpt-disp-receiver";
@@ -87,8 +74,12 @@ static void threadFunc(volatile void * src, const int width, const int height) {
 				const int res = tjCompress2(jpgCompressor, (unsigned char *)src, width, 4 * width, height, TJPF_BGRX, &p, &frameSize, TJSAMP_422, 100.0 * g_settings.getJpegQual(), TJFLAG_NOREALLOC);
 				if (res == 0) {
 
-					const StreamMsg& msg = createHighLvlMsg(frameNbr++, (char*)p, frameSize, width, height);
-					const std::vector<char>& msgData = serializer.writeBinary(msg);
+					const std::vector<char>& msgData = 
+						serializer.writeBinary(StreamMsg()
+						.setFrameNbr(frameNbr++)
+						.setWidth(width)
+						.setHeight(height)
+						.setData(std::vector<char>(p, p + frameSize)));
 
 					for (auto& client : clients) {
 						for (const auto& route : client->getRoutes()) {
