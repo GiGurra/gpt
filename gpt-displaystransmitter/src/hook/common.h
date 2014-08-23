@@ -54,6 +54,11 @@ extern const StreamTransmitterCfg g_settings;
 void logText(const char * str);
 
 /**
+* Logs text.
+*/
+void logText(const std::string& str);
+
+/**
 * Logs a number.
 */
 void logNumber(const double d);

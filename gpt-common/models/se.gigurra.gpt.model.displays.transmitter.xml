@@ -3,17 +3,11 @@
 	</Enums>
 	<Types>
 		<StreamTarget extends="se.gigurra.gpt.model.common.NetworkTarget">
-			<maxFps type="float32">50</maxFps>
-			<maxBwBps type="int32">50000000</maxBwBps>
-			<jpegQual type="float32">0.7</jpegQual>
 		</StreamTarget>
 		<StreamTransmitterCfg>
-			<useTcp type="bool">true</useTcp>
 			<targets type="list[StreamTarget]">[]</targets>
-			<maxFps type="float32">100</maxFps>
-			<maxBwBps type="int32">100000000</maxBwBps>
-			<useShm type="bool">false</useShm>
-			<shmName type="string">no_shm</shmName>
+			<maxFps type="float32">50</maxFps>
+			<jpegQual type="float32">0.7</jpegQual>
 		</StreamTransmitterCfg>
 		<Stream>
 			<target type="StreamTarget">{}</target>

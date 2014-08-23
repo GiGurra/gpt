@@ -30,17 +30,20 @@ SET(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_MODULE_LINKER_FLAGS_RELWIT
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+set(AUTOMOC_MOC_OPTIONS "-I$ENV{MNET_INSTALL_PATH}/include")
 
 find_package(Qt5WebSockets)
 
 SET (LIB_TYPE SHARED)
 
-include_directories(    $ENV{MGEN_INSTALL_PATH}/include
-                        $ENV{MNET_INSTALL_PATH}/include
+STRING(REGEX REPLACE "\\\\" "/" MGEN_INSTALL_PATH $ENV{MGEN_INSTALL_PATH} )
+STRING(REGEX REPLACE "\\\\" "/" MNET_INSTALL_PATH $ENV{MNET_INSTALL_PATH} )
+
+include_directories(    ${MGEN_INSTALL_PATH}/include
+                        ${MNET_INSTALL_PATH}/include
                         ${CMAKE_CURRENT_SOURCE_DIR}
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../../gpt-common/src_generated/main/cpp	)
-						# ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours   
 
 add_library(            ${PROJECT_NAME} ${LIB_TYPE}
 						detour.cpp
@@ -51,10 +54,12 @@ add_library(            ${PROJECT_NAME} ${LIB_TYPE}
                         ID3D9Wrapper_Device.h
                         Logger.cpp
                         main.cpp
-                        common.h     )
+                        common.h
+                        ${MNET_INSTALL_PATH}/include/mnet/WebSocket.h
+                        ${MNET_INSTALL_PATH}/include/mnet/ReconnectingWebSocket.h
+                        ${MNET_INSTALL_PATH}/include/mnet/MNetClient.h )
 
 target_link_libraries(  ${PROJECT_NAME} 
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/jpeg.lib
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/turbojpeg.lib
                         Qt5::WebSockets     )
-                        # ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours/detours.lib

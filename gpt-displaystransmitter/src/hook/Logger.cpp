@@ -16,6 +16,11 @@ void logText(const char * str) {
 		fprintf(file.get(), "%s\n", str);
 }
 
+
+void logText(const std::string& str) {
+	logText(str.c_str());
+}
+
 void logNumber(const double d) {
 	char buf[32] = { };
 	sprintf(buf, "%f", d);

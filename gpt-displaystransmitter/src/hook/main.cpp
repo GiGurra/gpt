@@ -11,6 +11,8 @@
 #include "ID3D9Wrapper.h"
 
 #pragma comment(lib, "d3d9.lib")
+#pragma comment(lib, "jpeg.lib")
+#pragma comment(lib, "turbojpeg.lib")
 
 typedef IDirect3D9 *(WINAPI*CreateD3D9DevFcn)(UINT SDKVersion);
 
