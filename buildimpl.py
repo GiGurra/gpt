@@ -28,6 +28,7 @@ def generate():
     generate_model()
 
 def release(folder):
+    rmFile("release.zip")
     rmFolder(folder)
     mkFolder(folder)
     for file in findFiles(".", '*assembly*.jar*'):
@@ -39,6 +40,7 @@ def release(folder):
     shutil.copyfile("gpt-displaystransmitter/target/loader/Release/gpt_displaystransmitter_loader.exe", "release/gpt_displaystransmitter_loader.exe")
     shutil.copyfile("gpt-displaystransmitter/target/hook/Release/gpt_displaystransmitter_hook.dll", "release/gpt_displaystransmitter_hook.dll")
     shutil.copyfile("LICENSE", "release/LICENSE.txt")
+    shutil.make_archive("release", format="zip", root_dir="release")    
 
     
 ###########
