@@ -9,8 +9,7 @@ int main(int argc, char *argv[]) {
 
 	std::stringstream stream;
 	for (int i = 0; i < argc; i++) {
-		stream << " ";
-		stream << argv[i];
+		stream << " " << argv[i];
 	}
 	std::string args = stream.str();
 	
