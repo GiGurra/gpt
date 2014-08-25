@@ -42,3 +42,6 @@ __pychache__/
 
 .idea
 .idea/
+
+#release
+release/

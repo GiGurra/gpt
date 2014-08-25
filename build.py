@@ -10,8 +10,8 @@ parser.add_argument("-e", "--eclipse", action='store_true')
 parser.add_argument("-g", "--generate", action='store_true')
 parser.add_argument("-t", "--test", action='store_true')
 parser.add_argument("-a", "--all", action='store_true')
-parser.add_argument("-d", "--deploy", action='store_true')
-parser.add_argument("-f", "--deploy_folder", default='X:/johan/deploy/gpt')
+parser.add_argument("-r", "--release", action='store_true')
+parser.add_argument("-f", "--release_folder", default='release/')
 args = parser.parse_args()
 
 # cleaning
@@ -35,5 +35,5 @@ if args.generate:
     generate()
     
 # generating model
-if args.deploy:
-    deploy(args.deploy_folder)
+if args.release:
+    release(args.release_folder)

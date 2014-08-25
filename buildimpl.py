@@ -27,11 +27,17 @@ def publish():
 def generate():
     generate_model()
 
-def deploy(folder):
+def release(folder):
+    rmFolder(folder)
     mkFolder(folder)
-    for jarFile in findFiles(".", '*assembly*.jar*'):
-        trgFilePath = folder + "/" + os.path.basename(jarFile)
-        shutil.copyfile(jarFile, trgFilePath)
+    for file in findFiles(".", '*assembly*.jar*'):
+        trgFilePath = folder + "/" + os.path.basename(file)
+        shutil.copyfile(file, trgFilePath)
+    for file in findFiles(".", '*.json*'):
+        trgFilePath = folder + "/" + os.path.basename(file)
+        shutil.copyfile(file, trgFilePath)
+    shutil.copyfile("gpt-displaystransmitter/target/loader/Release/gpt_displaystransmitter_loader.exe", "release/gpt_displaystransmitter_loader.exe")
+    shutil.copyfile("gpt-displaystransmitter/target/hook/Release/gpt_displaystransmitter_hook.dll", "release/gpt_displaystransmitter_hook.dll")
 
     
 ###########
