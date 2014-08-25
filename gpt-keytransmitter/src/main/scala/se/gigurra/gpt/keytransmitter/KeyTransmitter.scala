@@ -25,7 +25,7 @@ object KeyTransmitter {
 
   def main(args: Array[String]) {
 
-    val cfgFileName = "keytransmitter_config.json"
+    val cfgFileName = "gpt-keytransmitter-cfg.json"
     val cfg = ReadConfigFile[KeyTransmitterCfg](cfgFileName).getOrElse(new KeyTransmitterCfg)
     SaveConfigFile(cfgFileName, cfg)
 

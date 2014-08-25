@@ -46,7 +46,7 @@ object ShmTransmitter {
 
   def main(args: Array[String]) {
 
-    val cfgFileName = "shm_transmitter_cfg.json"
+    val cfgFileName = "gpt-shmtransmitter-cfg.json"
     val cfg = ReadConfigFile[ShmTransmitterCfg](cfgFileName).getOrElse(new ShmTransmitterCfg)
     SaveConfigFile(cfgFileName, cfg)
 

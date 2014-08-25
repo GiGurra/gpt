@@ -38,6 +38,7 @@ def release(folder):
         shutil.copyfile(file, trgFilePath)
     shutil.copyfile("gpt-displaystransmitter/target/loader/Release/gpt_displaystransmitter_loader.exe", "release/gpt_displaystransmitter_loader.exe")
     shutil.copyfile("gpt-displaystransmitter/target/hook/Release/gpt_displaystransmitter_hook.dll", "release/gpt_displaystransmitter_hook.dll")
+    shutil.copyfile("LICENSE", "release/LICENSE.txt")
 
     
 ###########

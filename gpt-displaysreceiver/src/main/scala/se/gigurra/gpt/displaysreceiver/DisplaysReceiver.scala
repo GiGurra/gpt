@@ -25,7 +25,7 @@ import se.gigurra.gpt.model.displays.receiver.StreamReceiverCfg
 object DisplaysReceiver {
 
   val tjDec = new TJDecompressor
-  val DEFAULT_SETTINGS_FILE_NAME = "displays_receiver_cfg.json"
+  val DEFAULT_SETTINGS_FILE_NAME = "gpt-displaysreceiver-cfg.json"
 
   val windows = new ArrayBuffer[RenderWindow]
   val swapChain = new TripleBuffer[BufferedImage](new Array[BufferedImage](3), false)

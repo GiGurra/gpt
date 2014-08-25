@@ -27,7 +27,7 @@ typedef IDirect3D9 *(WINAPI*CreateD3D9DevFcn)(UINT SDKVersion);
 static StreamTransmitterCfg readConfig();
 static IDirect3D9* WINAPI myCreateD3D9IfFcn(UINT SDKVersion);
 
-static const std::string s_cfgFileName = "gpt_displaystransmitter_cfg.json";
+static const std::string s_cfgFileName = "gpt-displaystransmitter-cfg.json";
 static CreateD3D9DevFcn s_realCreateD3D9IfFcn = NULL;
 const StreamTransmitterCfg g_settings = readConfig();
 
