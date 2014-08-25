@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 		stream << " ";
 		stream << argv[i];
 	}
-	std::string args = stream.str().append("\0");
+	std::string args = stream.str();
 	
-	return !DetourCreateProcessWithDll("Falcon BMS.exe", &args[0], NULL, NULL, TRUE, 0, NULL, NULL, &s, &p, "gpt_displaystransmitter_hook.dll", 0);
+	return !DetourCreateProcessWithDll("Falcon BMS.exe", (char*)(args.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &s, &p, "gpt_displaystransmitter_hook.dll", 0);
 }
