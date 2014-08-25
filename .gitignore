@@ -4,7 +4,6 @@ README.md~
 .gitignore~
 LICENSE~
 *.exe
-*.jar
 *.zip
 
 # sbt specific
