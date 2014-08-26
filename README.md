@@ -1,7 +1,5 @@
-gpt
+GPT
 ===
-
-Gurra's Pit Tools (toolkit for bms flight sim enthusiasts).
 
 GPT accomplishes the following:
   * Streaming Falcon4 BMS cockpit displays to remote rendering computers
