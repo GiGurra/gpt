@@ -21,5 +21,6 @@ Building GPT depends on:
   * Python
   * JNA
   * Libjpeg-turbo/turbojpeg
+  * CMake (3)
 
 GPT is released under GPL v2.
