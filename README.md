@@ -21,6 +21,7 @@ Running GPT depends on:
   * Libjpeg-turbo
 
 Building GPT depends on:
+  * doit
   * https://github.com/culvertsoft/mgen
   * https://github.com/culvertsoft/mnet
   * Qt

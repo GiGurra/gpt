@@ -6,14 +6,14 @@ from buildutil import *
 ###########
 
 def clean():
-    rmFolder("gpt-common/src_generated")
-    rmFolder("gpt-displaystransmitter/target")
-    check_call("sbt clean", shell=True)
+    clean_gen()
+    clean_cpp()
+    clean_jvm()
     
 def build():
     generate_model()
     build_cpp()
-    check_call("sbt compile package publish-local assembly", shell=True)
+    build_jvm()
 
 def test():
     sbt_test(".")
@@ -27,7 +27,8 @@ def publish():
 def generate():
     generate_model()
 
-def release(folder):
+def release():
+    folder = "release"
     rmFile("release.zip")
     rmFolder(folder)
     mkFolder(folder)
@@ -54,6 +55,9 @@ default_cpp_build_cfg = "NEEDS_TO_BE_SET"
 def generate_model():
     check_call("mgen models/project.xml", cwd="gpt-common", shell=True)
     
+def build_jvm():
+    check_call("sbt compile package publish-local assembly", shell=True)
+
 def build_cpp():
     mkFolder("gpt-displaystransmitter/target")
     mkFolder("gpt-displaystransmitter/target/hook")
@@ -62,3 +66,16 @@ def build_cpp():
     cmake("gpt-displaystransmitter/target/loader", "../../src/loader -T v120_xp", "Release")
     cppBuild("gpt-displaystransmitter/target/hook", "Release", "gpt_displaystransmitter_hook")
     cppBuild("gpt-displaystransmitter/target/loader", "Release", "gpt_displaystransmitter_loader")
+
+def clean_gen():
+    rmFolder("gpt-common/src_generated")
+    
+def clean_cpp():
+    rmFolder("gpt-displaystransmitter/target")
+    
+def clean_jvm():
+    check_call("sbt clean", shell=True)
+    
+def clean_release():
+    rmFolder("release")
+    

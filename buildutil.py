@@ -39,6 +39,15 @@ def findFiles(path, matching):
         for fileName in fnmatch.filter(filenames, matching):
             out.append(os.path.join(root, fileName))
     return out
+     
+def findFilesExt(path, exts):
+    out = []
+    for root, dirnames, filenames in os.walk(path):
+        for fileName in filenames:
+            for ext in exts:
+                if fileName.endswith(ext):
+                    out.append(os.path.join(root, fileName))
+    return out
 
 def rmFolders(path, matching):
     for folder in findDirs(path, matching):

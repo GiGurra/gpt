@@ -45,3 +45,6 @@ __pychache__/
 
 #release
 release/
+
+#doit
+.doit.db*
