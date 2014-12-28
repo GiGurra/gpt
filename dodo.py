@@ -22,7 +22,7 @@ def task_build():
 def task_build_cpp():
     return {
         'task_dep': ['generate'],
-        'file_dep': cpp_files,
+        'file_dep': cpp_build_file_dep,
         'actions': [buildimpl.build_cpp],
         'targets': ['gpt-displaystransmitter/target'],
         'clean': [buildimpl.clean_cpp],
@@ -33,7 +33,7 @@ def task_build_cpp():
 def task_build_jvm():
     return {
         'task_dep': ['generate'],
-        'file_dep': jvm_files,
+        'file_dep': jvm_build_file_dep,
         'actions': [buildimpl.build_jvm],
         'targets': ["gpt-common/target"],
         'clean': [buildimpl.clean_jvm],
@@ -43,7 +43,7 @@ def task_build_jvm():
   
 def task_eclipse():
     return {
-        'file_dep': jvm_files,
+        'file_dep': jvm_build_file_dep,
         'task_dep': ['generate'],
         'actions': [buildimpl.eclipse],
         'doc': ': Create eclipse projects',
@@ -52,8 +52,8 @@ def task_eclipse():
     
 def task_generate():
     return {
-        'file_dep': model_files,
-        'actions': [buildimpl.generate_model, updateGeneratedFileLists],
+        'file_dep': codegen_model_file_dep,
+        'actions': [buildimpl.generate_model],
         'clean': [buildimpl.clean_gen],
         'targets': ["gpt-common/src_generated"],
         'doc': ': Generate cross-language data model source code for GPT',
@@ -73,31 +73,24 @@ def task_create_release():
     
 ###############################################################################
 ###############################################################################
+###     Sources     ###
+#######################
 
-# Helpers for generated code changes
+codegen_model_file_dep = buildutil.findFiles('gpt-common/models', '*.xml')
 
-model_files = buildutil.findFilesExt('gpt-common/models', '.xml')
-jvm_files_manual =  buildutil.findFiles('gpt-common/models', '*.xml') + \
-                    buildutil.findFilesExt('gpt-common/src', ['.java', '.scala', '.sbt']) + \
-                    buildutil.findFilesExt('gpt-displaysreceiver/src', ['.java', '.scala', '.sbt']) + \
-                    buildutil.findFilesExt('gpt-keyreceiver/src', ['.java', '.scala', '.sbt']) + \
-                    buildutil.findFilesExt('gpt-keytransmitter/src', ['.java', '.scala', '.sbt']) + \
-                    buildutil.findFilesExt('gpt-shmreceiver/src', ['.java', '.scala', '.sbt']) + \
-                    buildutil.findFilesExt('gpt-shmtransmitter/src', ['.java', '.scala', '.sbt'])
-cpp_files_manual =  buildutil.findFiles('gpt-common/models', '*.xml') + \
-                    buildutil.findFilesExt('gpt-displaysreceiver/src', ['.cpp', '.h', 'CMakeLists.txt'])
+jvm_build_file_dep = \
+    codegen_model_file_dep + \
+    buildutil.findFilesExt('gpt-common/src', ['.java', '.scala', '.sbt']) + \
+    buildutil.findFilesExt('gpt-displaysreceiver/src', ['.java', '.scala', '.sbt']) + \
+    buildutil.findFilesExt('gpt-keyreceiver/src', ['.java', '.scala', '.sbt']) + \
+    buildutil.findFilesExt('gpt-keytransmitter/src', ['.java', '.scala', '.sbt']) + \
+    buildutil.findFilesExt('gpt-shmreceiver/src', ['.java', '.scala', '.sbt']) + \
+    buildutil.findFilesExt('gpt-shmtransmitter/src', ['.java', '.scala', '.sbt']) + \
+    buildutil.findFilesExt('gpt-common/src_generated', ['.java', '.scala', '.sbt'])
 
-jvm_files = []
-cpp_files = []
-all_input_files = []
-            
-def updateGeneratedFileLists():
-    del jvm_files[:]
-    del cpp_files[:]
-    del all_input_files[:]
-    jvm_files.extend(jvm_files_manual + buildutil.findFilesExt('gpt-common/src_generated', ['.java', '.scala', '.sbt']))
-    cpp_files.extend(cpp_files_manual + buildutil.findFilesExt('gpt-common/src_generated', ['.cpp', '.h']))
-    all_input_files.extend(jvm_files + cpp_files)
+cpp_build_file_dep = \
+    codegen_model_file_dep + \
+    buildutil.findFilesExt('gpt-displaysreceiver/src', ['.cpp', '.h', 'CMakeLists.txt']) + \
+    buildutil.findFilesExt('gpt-common/src_generated', ['.cpp', '.h', 'CMakeLists.txt'])
     
-updateGeneratedFileLists()
-
+all_input_files = cpp_build_file_dep + jvm_build_file_dep
