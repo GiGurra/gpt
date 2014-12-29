@@ -7,9 +7,9 @@ else()
 endif()
 
 if ("$ENV{MNET_INSTALL_PATH}" STREQUAL "")
-	message(FATAL_ERROR "Unable to find MGen install path, please check that MNET_INSTALL_PATH environmental variable is set")
+	message(FATAL_ERROR "Unable to find MNet install path, please check that MNET_INSTALL_PATH environmental variable is set")
 else()
-	message("MGen install path found: $ENV{MNET_INSTALL_PATH}")
+	message("MNet install path found: $ENV{MNET_INSTALL_PATH}")
 endif()
 
 project(gpt_displaystransmitter_hook)
