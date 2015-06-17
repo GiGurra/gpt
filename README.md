@@ -8,8 +8,8 @@ GPT accomplishes the following:
 
 Here's some demo footage of what you can use it for:
 
-https://www.youtube.com/watch?v=X1YIXiCxA9w&list=UU4iUXqWGxAm5ojkxkq6gljw
-https://www.youtube.com/watch?v=AlKxqR_7_Cc&list=UU4iUXqWGxAm5ojkxkq6gljw
+* https://www.youtube.com/watch?v=X1YIXiCxA9w&list=UU4iUXqWGxAm5ojkxkq6gljw
+* https://www.youtube.com/watch?v=AlKxqR_7_Cc&list=UU4iUXqWGxAm5ojkxkq6gljw
 
 
 [Discussion Thread](https://www.bmsforum.org/forum/showthread.php?10677-Beta-Release-GPT-(cockpit-texture-extraction-remote-cockpit-control-shm-mirror))
