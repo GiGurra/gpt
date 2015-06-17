@@ -12,7 +12,7 @@ https://www.youtube.com/watch?v=X1YIXiCxA9w&list=UU4iUXqWGxAm5ojkxkq6gljw
 https://www.youtube.com/watch?v=AlKxqR_7_Cc&list=UU4iUXqWGxAm5ojkxkq6gljw
 
 
-[Discussion Thread](http://www.benchmarksims.org/forum/showthread.php?10677-Beta-Release-GPT-(cockpit-texture-extraction-remote-cockpit-control-shm-mirror))
+[Discussion Thread](https://www.bmsforum.org/forum/showthread.php?10677-Beta-Release-GPT-(cockpit-texture-extraction-remote-cockpit-control-shm-mirror))
 
 Running GPT depends on:
   * Qt runtime libraries
