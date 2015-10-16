@@ -62,8 +62,8 @@ def build_cpp():
     mkFolder("gpt-displaystransmitter/target")
     mkFolder("gpt-displaystransmitter/target/hook")
     mkFolder("gpt-displaystransmitter/target/loader") 
-    cmake("gpt-displaystransmitter/target/hook", "../../src/hook -T v120_xp", "Release")
-    cmake("gpt-displaystransmitter/target/loader", "../../src/loader -T v120_xp", "Release")
+    cmake("gpt-displaystransmitter/target/hook", "../../src/hook", "Release")
+    cmake("gpt-displaystransmitter/target/loader", "../../src/loader", "Release")
     cppBuild("gpt-displaystransmitter/target/hook", "Release", "gpt_displaystransmitter_hook")
     cppBuild("gpt-displaystransmitter/target/loader", "Release", "gpt_displaystransmitter_loader")
 

@@ -33,6 +33,8 @@ set(CMAKE_AUTOMOC ON)
 set(AUTOMOC_MOC_OPTIONS "-I$ENV{MNET_INSTALL_PATH}/include")
 
 find_package(Qt5WebSockets REQUIRED)
+find_package(Qt5Core REQUIRED)
+
 
 SET (LIB_TYPE SHARED)
 
@@ -63,4 +65,5 @@ target_link_libraries(  ${PROJECT_NAME}
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/jpeg.lib
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/detours/detours.lib
                         ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/turbojpeg/turbojpeg.lib
-                        Qt5::WebSockets     )
+                        Qt5::Core
+                        Qt5::WebSockets  )

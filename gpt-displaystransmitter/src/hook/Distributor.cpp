@@ -1,4 +1,4 @@
-
+#define QT_COMPILING_QSTRING_COMPAT_CPP
 
 #include "common.h"
 #include <thread>
