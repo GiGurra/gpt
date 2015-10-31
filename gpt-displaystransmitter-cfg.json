@@ -6,6 +6,6 @@
 			"port": 8051
 		}
 	],
-	"maxFps": 50,
+	"maxFps": 50.0,
 	"jpegQual": 0.7
 }

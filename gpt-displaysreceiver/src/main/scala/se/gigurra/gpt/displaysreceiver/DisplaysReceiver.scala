@@ -99,6 +99,7 @@ object DisplaysReceiver {
         if (route != null && route.name == NetworkNames.DISP_TRANSMITTER) {
           Serializer.read[StreamMsg](msg_in) match {
             case Some(msg) =>
+              println(s"Received frame ${msg.getFrameNbr}, ${msg.getWidth}, ${msg.getHeight}")
               tjDec.setJPEGImage(msg.getData, msg.getData.size)
               prepareSwapChain(tjDec.getWidth, tjDec.getHeight)
               swapChain.paint(tjDec.decompress(_, 0))
