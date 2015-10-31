@@ -22,5 +22,3 @@ libraryDependencies += "se.culvertsoft" % "mgen-javalib" % "SNAPSHOT"
 libraryDependencies += "se.culvertsoft" % "mnet-client" % "SNAPSHOT"
 
 unmanagedSourceDirectories in Compile += baseDirectory.value / "src_generated/main/java"
-
-EclipseKeys.withSource := true

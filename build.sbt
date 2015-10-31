@@ -1,6 +1,3 @@
-
-// Remember, sbt needs empty lines between active settings
-
 name := "gpt"
 
 organization := "se.gigurra"
@@ -9,13 +6,11 @@ version := scala.util.Properties.envOrElse("GPT_BUILD_VERSION", "SNAPSHOT")
 
 scalaVersion := "2.11.7"
 
-isSnapshot := version.value.contains("SNAPSHOT")
-
-crossPaths := false
-
 lazy val gpt_common = project in file("gpt-common")
 
 lazy val gpt_displaysreceiver = (project in file("gpt-displaysreceiver")).dependsOn(gpt_common)
+
+lazy val gpt_displaystransmitter = (project in file("gpt-displaystransmitter")).dependsOn(gpt_common)
 
 lazy val gpt_keyreceiver = (project in file("gpt-keyreceiver")).dependsOn(gpt_common)
 

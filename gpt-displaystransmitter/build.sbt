@@ -1,4 +1,4 @@
-name := "gpt-displaysreceiver"
+name := "gpt-displaystransmitter"
 
 organization := "se.gigurra"
 

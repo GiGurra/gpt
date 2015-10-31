@@ -7,10 +7,10 @@
 			"border": false,
 			"alwaysOnTop": true,
 			"source": {
-				"x": 0.625,
-				"y": 0.625,
-				"width": 0.375,
-				"height": 0.375
+				"x": 0.0,
+				"y": 0.0,
+				"width": 0.999,
+				"height": 0.999
 			},
 			"target": {
 				"x": 0.0,
@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "Right_MFD",
-			"active": true,
+			"active": false,
 			"border": false,
 			"alwaysOnTop": true,
 			"source": {
