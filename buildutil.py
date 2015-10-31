@@ -9,8 +9,6 @@ import fnmatch
 import platform
 from subprocess import check_call
 
-cpp_build_cfgs = ["Debug", "RelwithDebInfo", "Release"]
-
 def mkFolder(path):
     if not os.path.exists(path):
         os.makedirs(path)
@@ -63,25 +61,6 @@ def findLocalFiles(path, matching):
         out.append(name)
     return out
 
-def cppBuild(path, cfg, projName):
-    if platform.system()=="Windows":
-        check_call("msbuild " + projName + ".sln /p:Configuration=" + cfg, cwd=path, shell=True)
-    else:
-        check_call("make", cwd=path, shell=True)
-        
-def cppRun(path, cfg, projName):
-    if platform.system()=="Windows":
-        check_call(cfg + "\\" + projName + ".exe", cwd=path, shell=True)
-    else:
-        check_call("./" + projName, cwd=path, shell=True)
-
-def cppBuildRun(path, cfg, projname):
-    cppBuild(path, cfg, projname)
-    cppRun(path, cfg, projname) 
-
-def cmake(buildPath, srcPath, cfg):
-    check_call("cmake -DCMAKE_BUILD_TYPE=" + cfg + " " + srcPath, cwd=buildPath, shell=True)
-    
 def sbt(path, targets):
     check_call("sbt " + targets, cwd=path, shell=True)  
     
