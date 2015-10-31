@@ -7,7 +7,7 @@ organization := "se.gigurra"
 
 version := scala.util.Properties.envOrElse("GPT_BUILD_VERSION", "SNAPSHOT")
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.7"
 
 isSnapshot := version.value.contains("SNAPSHOT")
 
