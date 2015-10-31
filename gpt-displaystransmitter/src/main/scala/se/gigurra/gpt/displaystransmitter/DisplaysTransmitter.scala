@@ -12,18 +12,19 @@ import se.gigurra.gpt.model.displays.transmitter.StreamTransmitterCfg
 
 import scala.collection.JavaConversions._
 
-case class State(
-  sourceImg: BufferedImage = null,
-  srcImgData: Array[Int] = null,
-  compressBuf: Array[Byte] = null,
-  frameNumber: Int = 0,
-  nextSendTime: Double = 0.0)
+case class State() {
+  var sourceImg: BufferedImage = null
+  var srcImgData: Array[Int] = null
+  var compressBuf: Array[Byte] = null
+  var frameNumber: Int = 0
+  var nextSendTime: Double = 0.0
+}
 
 object DisplaysTransmitter {
 
   val DEFAULT_SETTINGS_FILE_NAME = "gpt-displaystransmitter-cfg.json"
   val compressor = new TJCompressor
-  var state = State()
+  val state = State()
 
   def readShm(shm: FalconTexturesShm): Unit = {
     shm.textureData.get(state.srcImgData).reset()
@@ -110,15 +111,15 @@ object DisplaysTransmitter {
       println(s"BMS detected or export resolution changed ${resolution} .. Adapting ..")
       require(resolution.bytesPerPixel == 4, "Shm is not RBGA format!")
 
-      state = state.copy(sourceImg = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_INT_RGB))
-      state = state.copy(srcImgData = state.sourceImg.getRaster.getDataBuffer.asInstanceOf[DataBufferInt].getData)
-      state = state.copy(compressBuf = new Array[Byte](2 * resolution.frameByteSize))
+      state.sourceImg = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_INT_RGB)
+      state.srcImgData = state.sourceImg.getRaster.getDataBuffer.asInstanceOf[DataBufferInt].getData
+      state.compressBuf = new Array[Byte](2 * resolution.frameByteSize)
 
       compressor.setJPEGQuality((settings.getJpegQual * 100.0f).toInt)
       compressor.setSubsamp(TJ.SAMP_422)
       compressor.setSourceImage(state.sourceImg, 0, 0, resolution.width, resolution.height)
 
-      state = state.copy(nextSendTime = time)
+      state.nextSendTime = time
 
       println("Resumed texture export!")
     }
@@ -126,7 +127,7 @@ object DisplaysTransmitter {
 
   def createMsg(): StreamMsg = {
 
-    state = state.copy(frameNumber = state.frameNumber + 1)
+    state.frameNumber += 1
 
     compressor.compress(state.compressBuf, 0)
     new StreamMsg()
@@ -155,7 +156,7 @@ object DisplaysTransmitter {
     if (settings.hasMaxFps && settings.getMaxFps > 0) {
       while(time < state.nextSendTime)
         Thread.sleep(1)
-      state.copy(nextSendTime = state.nextSendTime + 1.0 / settings.getMaxFps)
+      state.nextSendTime += 1.0 / settings.getMaxFps
     }
   }
 
