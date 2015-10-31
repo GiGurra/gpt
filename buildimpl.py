@@ -33,6 +33,9 @@ def release():
     for file in findFiles(".", '*.json*'):
         trgFilePath = folder + "/" + os.path.basename(file)
         shutil.copyfile(file, trgFilePath)
+    for file in findFiles("gpt-startupscripts", '*.bat*'):
+        trgFilePath = folder + "/" + os.path.basename(file)
+        shutil.copyfile(file, trgFilePath)
     shutil.copyfile("README.txt", "release/README.txt")
     shutil.copyfile("LICENSE", "release/LICENSE.txt")
     shutil.make_archive("release", format="zip", root_dir="release")    
