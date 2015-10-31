@@ -16,9 +16,6 @@ def build():
 def test():
     sbt_test(".")
 
-def publish():
-    print("publish(): Not yet implemented!")
-    
 def generate():
     generate_model()
 
@@ -61,7 +58,7 @@ def generate_model():
     check_call("mgen models/project.xml", cwd="gpt-common", shell=True)
     
 def build_jvm():
-    check_call("sbt compile package publish-local assembly", shell=True)
+    check_call("sbt compile package assembly", shell=True)
 
 def clean_gen():
     rmFolder("gpt-common/src_generated")
