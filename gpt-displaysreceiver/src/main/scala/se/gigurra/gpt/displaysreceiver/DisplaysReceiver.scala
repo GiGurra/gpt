@@ -60,12 +60,11 @@ object DisplaysReceiver {
     val settings = ReadConfigFile[StreamReceiverCfg](DEFAULT_SETTINGS_FILE_NAME).getOrElse(new StreamReceiverCfg)
     SaveConfigFile(DEFAULT_SETTINGS_FILE_NAME, settings)
 
-    print("Starting displays...")
+    println("Starting displays...")
 
     for (display <- settings.getDisplays()) {
-      println(s"Checking ${display.getName}")
+      println(s"${display.getName} active: ${display.getActive()}")
       if (display.getActive()) {
-        println("Active")
         val xScr = display.getTarget().getX().toInt
         val yScr = display.getTarget().getY().toInt
         val wScr = display.getTarget().getWidth().toInt
@@ -86,7 +85,7 @@ object DisplaysReceiver {
         windows.add(window)
       }
     }
-    println("ok")
+    println("Displays started!")
 
     // Make windows black by default
     prepareSwapChain(1200, 1200)
