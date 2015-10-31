@@ -23,18 +23,25 @@ def generate():
     generate_model()
 
 def release():
-    folder = "release"
+    releaseRoot = "release"
+    components = releaseRoot + "/components"
+    dependencies = releaseRoot + "/dependencies"
     rmFile("release.zip")
-    rmFolder(folder)
-    mkFolder(folder)
+    rmFolder(releaseRoot)
+    mkFolder(releaseRoot)
+    mkFolder(components)
+    mkFolder(dependencies)
     for file in findFiles(".", '*assembly*.jar*'):
-        trgFilePath = folder + "/" + os.path.basename(file)
+        trgFilePath = components + "/" + os.path.basename(file)
         shutil.copyfile(file, trgFilePath)
     for file in findFiles(".", '*.json*'):
-        trgFilePath = folder + "/" + os.path.basename(file)
+        trgFilePath = components + "/" + os.path.basename(file)
         shutil.copyfile(file, trgFilePath)
     for file in findFiles("gpt-startupscripts", '*.bat*'):
-        trgFilePath = folder + "/" + os.path.basename(file)
+        trgFilePath = components + "/" + os.path.basename(file)
+        shutil.copyfile(file, trgFilePath)
+    for file in findFiles("dependencies", '*'):
+        trgFilePath = dependencies + "/" + os.path.basename(file)
         shutil.copyfile(file, trgFilePath)
     shutil.copyfile("README.txt", "release/README.txt")
     shutil.copyfile("LICENSE", "release/LICENSE.txt")
