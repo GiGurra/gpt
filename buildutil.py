@@ -88,9 +88,6 @@ def sbt(path, targets):
 def sbt_test(path):
     sbt(path, "test")
 
-def sbt_eclipse(path):
-    sbt(path, "eclipse")
-
 def sbt_clean(path):
     sbt(path, "clean")
 

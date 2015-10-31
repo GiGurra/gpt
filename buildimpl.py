@@ -18,9 +18,6 @@ def build():
 def test():
     sbt_test(".")
 
-def eclipse():
-    check_call("sbt eclipse", shell=True)
-
 def publish():
     print("publish(): Not yet implemented!")
     

@@ -6,7 +6,7 @@ import buildutil
 def task_all():
     return {
         'actions': [],
-        'task_dep': ['build', 'eclipse', 'create_release'],
+        'task_dep': ['build', 'create_release'],
         'doc': ': Do everything!',
         'verbosity': 2
     }
@@ -40,16 +40,7 @@ def task_build_jvm():
         'doc': ': Build GPT jvm parts',
         'verbosity': 2
     }
-  
-def task_eclipse():
-    return {
-        'file_dep': jvm_build_file_dep,
-        'task_dep': ['generate'],
-        'actions': [buildimpl.eclipse],
-        'doc': ': Create eclipse projects',
-        'verbosity': 2
-    }
-    
+
 def task_generate():
     return {
         'file_dep': codegen_model_file_dep,

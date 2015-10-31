@@ -120,7 +120,6 @@ object DisplaysTransmitter {
 
       state = state.copy(nextSendTime = time)
 
-
       println("Resumed texture export!")
     }
   }
