@@ -24,13 +24,9 @@ Building GPT depends on:
   * doit
   * https://github.com/culvertsoft/mgen
   * https://github.com/culvertsoft/mnet
-  * Qt
-  * Java JDK 1.7
-  * VS2013
-  * MS Detours
+  * Java JDK 1.8
   * Python
   * JNA
   * Libjpeg-turbo/turbojpeg
-  * CMake (3)
 
 GPT is released under GPL v2.
