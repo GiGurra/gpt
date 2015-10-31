@@ -32,7 +32,7 @@ GPT is released as a simple zip file (gpt.zip) with two directories inside
  3. On the slave pc: copy the contents of the components folder to anywhere you like.
  4. Edit each component's corresponding cfg file (...._cfg.json) in notepad or your editor of choice
  5. Create custom shortcuts as desired.
- 6. Put the following in your "Falcon BMS 4.33\User\Config\falcon bms.cfg":
+ 6. Set the following in your "Falcon BMS 4.33\User\Config\falcon bms.cfg":
 		set g_bExportRTTTextures 1
 		set g_nRTTExportBatchSize 1
     

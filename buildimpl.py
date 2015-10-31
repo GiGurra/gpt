@@ -43,6 +43,8 @@ def release():
     for file in findFiles("dependencies", '*'):
         trgFilePath = dependencies + "/" + os.path.basename(file)
         shutil.copyfile(file, trgFilePath)
+    rmFile(components + "/gpt-common-assembly-SNAPSHOT.jar")
+    rmFile(components + "/gpt-assembly-SNAPSHOT.jar")
     shutil.copyfile("README.txt", "release/README.txt")
     shutil.copyfile("LICENSE", "release/LICENSE.txt")
     shutil.make_archive("release", format="zip", root_dir="release")    
