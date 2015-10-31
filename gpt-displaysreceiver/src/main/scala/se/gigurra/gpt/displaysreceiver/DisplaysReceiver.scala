@@ -88,7 +88,7 @@ object DisplaysReceiver {
     println("Displays started!")
 
     // Make windows black by default
-    prepareSwapChain(1200, 1200)
+    prepareSwapChain(1024, 1024)
     windows.foreach(_.issueUpdate())
 
     val listener = new MNetClient(
@@ -99,8 +99,7 @@ object DisplaysReceiver {
         if (route != null && route.name == NetworkNames.DISP_TRANSMITTER) {
           Serializer.read[StreamMsg](msg_in) match {
             case Some(msg) =>
-              println(s"Received frame ${msg.getFrameNbr}, ${msg.getWidth}, ${msg.getHeight}")
-              tjDec.setJPEGImage(msg.getData, msg.getData.size)
+              tjDec.setSourceImage(msg.getData, msg.getData.size)
               prepareSwapChain(tjDec.getWidth, tjDec.getHeight)
               swapChain.paint(tjDec.decompress(_, 0))
               windows.foreach(_.issueUpdate())

@@ -12,20 +12,21 @@ import se.gigurra.gpt.model.displays.transmitter.StreamTransmitterCfg
 
 import scala.collection.JavaConversions._
 
+case class State(
+  sourceImg: BufferedImage = null,
+  srcImgData: Array[Int] = null,
+  compressBuf: Array[Byte] = null,
+  frameNumber: Int = 0,
+  nextSendTime: Double = 0.0)
 
 object DisplaysTransmitter {
 
   val DEFAULT_SETTINGS_FILE_NAME = "gpt-displaystransmitter-cfg.json"
   val compressor = new TJCompressor
-  var sourceImg: BufferedImage = null
-  var srcImgData: Array[Int] = null
-  var compressBuf: Array[Byte] = null
-  var frameNumber = 0
-  var lastSendTime = 0.0
+  var state = State()
 
   def readShm(shm: FalconTexturesShm): Unit = {
-    shm.textureData.get(srcImgData)
-    shm.textureData.reset()
+    shm.textureData.get(state.srcImgData).reset()
   }
 
   def main(args: Array[String]) {
@@ -38,7 +39,7 @@ object DisplaysTransmitter {
     println(settings)
     println("Starting export")
 
-    val clients: Seq[MNetClient] = createClients(settings)
+    val clients = createClients(settings)
     val shm = FalconTexturesShm()
 
     try {
@@ -75,11 +76,10 @@ object DisplaysTransmitter {
     allowNew = true) {
     require(valid, s"Unable to open or create shared memory $name")
 
-
     val raw = getByteBuffer().get
     val textureData = raw.asIntBuffer()
 
-    textureData.position(128)
+    textureData.position(32)
     textureData.mark()
 
     def hasData = width > 0 && height > 0 && width <= 2048 && height <= 2048
@@ -92,47 +92,49 @@ object DisplaysTransmitter {
   }
 
   def createClients(settings: StreamTransmitterCfg): scala.Seq[_root_.se.culvertsoft.mnet.client.MNetClient] = {
-    settings.getTargets.map(t => new MNetClient(
-      NetworkNames.DISP_TRANSMITTER,
-      t.getIp,
-      t.getPort) {
+    settings.getTargets.map(t => new MNetClient(NetworkNames.DISP_TRANSMITTER, t.getIp, t.getPort) {
       override def handleError(error: Exception, source: Object): Unit = {
         error match {
           case error: ConnectException => println(s"Texture stream: Unable to connect to ${t.getIp}:${t.getPort}.. retrying..")
           case error => error.printStackTrace()
         }
       }
-    }.start()) // port 8052
+    }.start())
   }
 
   def reInit(resolution: Resolution, settings: StreamTransmitterCfg): Unit = {
-    if (sourceImg == null ||
-      sourceImg.getWidth != resolution.width ||
-      sourceImg.getHeight != resolution.height) {
+    if (state.sourceImg == null ||
+      state.sourceImg.getWidth != resolution.width ||
+      state.sourceImg.getHeight != resolution.height) {
 
       println(s"BMS detected or export resolution changed ${resolution} .. Adapting ..")
       require(resolution.bytesPerPixel == 4, "Shm is not RBGA format!")
 
-      sourceImg = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_INT_RGB)
-      srcImgData = sourceImg.getRaster.getDataBuffer.asInstanceOf[DataBufferInt].getData
-      compressBuf = new Array[Byte](2 * resolution.frameByteSize)
+      state = state.copy(sourceImg = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_INT_RGB))
+      state = state.copy(srcImgData = state.sourceImg.getRaster.getDataBuffer.asInstanceOf[DataBufferInt].getData)
+      state = state.copy(compressBuf = new Array[Byte](2 * resolution.frameByteSize))
 
       compressor.setJPEGQuality((settings.getJpegQual * 100.0f).toInt)
       compressor.setSubsamp(TJ.SAMP_422)
-      compressor.setSourceImage(sourceImg, 0, 0, resolution.width, resolution.height)
+      compressor.setSourceImage(state.sourceImg, 0, 0, resolution.width, resolution.height)
+
+      state = state.copy(nextSendTime = time)
+
 
       println("Resumed texture export!")
     }
   }
 
   def createMsg(): StreamMsg = {
-    frameNumber += 1
-    compressor.compress(compressBuf, 0)
+
+    state = state.copy(frameNumber = state.frameNumber + 1)
+
+    compressor.compress(state.compressBuf, 0)
     new StreamMsg()
-      .setData(util.Arrays.copyOf(compressBuf, compressor.getCompressedSize))
-      .setFrameNbr(frameNumber)
-      .setWidth(sourceImg.getWidth)
-      .setHeight(sourceImg.getHeight)
+      .setData(util.Arrays.copyOf(state.compressBuf, compressor.getCompressedSize))
+      .setFrameNbr(state.frameNumber)
+      .setWidth(state.sourceImg.getWidth)
+      .setHeight(state.sourceImg.getHeight)
   }
 
   def broadcast(msg: StreamMsg, clients: Seq[MNetClient]): Unit = {
@@ -148,14 +150,13 @@ object DisplaysTransmitter {
     }
   }
 
+  def time = System.nanoTime() / 1e9
+
   def throttle(settings: StreamTransmitterCfg): Unit = {
     if (settings.hasMaxFps && settings.getMaxFps > 0) {
-      val t = System.currentTimeMillis()/1e9
-      val tNextSend = lastSendTime + 1.0 / settings.getMaxFps
-      if (t < tNextSend) {
-        Thread.sleep((1000.0 * (tNextSend - t)).toLong)
-      }
-      lastSendTime = System.currentTimeMillis()/1e9
+      while(time < state.nextSendTime)
+        Thread.sleep(1)
+      state.copy(nextSendTime = state.nextSendTime + 1.0 / settings.getMaxFps)
     }
   }
 
