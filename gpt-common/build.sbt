@@ -13,6 +13,10 @@ isSnapshot := version.value.contains("SNAPSHOT")
 
 crossPaths := false
 
+libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.4"
+
+libraryDependencies += "com.google.guava" % "guava" % "18.0"
+
 libraryDependencies += "net.java.dev.jna" % "jna" % "4.1.0"
 
 libraryDependencies += "net.java.dev.jna" % "jna-platform" % "4.1.0"
