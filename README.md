@@ -16,7 +16,6 @@ Here's some demo footage of what you can use it for:
 
 Running GPT depends on:
   * Java JVM (1.8 or higher)
-  * Libjpeg-turbo
 
 Building GPT depends on:
   * doit
