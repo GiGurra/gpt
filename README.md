@@ -15,9 +15,7 @@ Here's some demo footage of what you can use it for:
 [Discussion Thread](https://www.bmsforum.org/forum/showthread.php?10677-Beta-Release-GPT-(cockpit-texture-extraction-remote-cockpit-control-shm-mirror))
 
 Running GPT depends on:
-  * Qt runtime libraries
-  * Java JVM (1.7 or higher)
-  * Visual Studio C++ Redistributable 2013
+  * Java JVM (1.8 or higher)
   * Libjpeg-turbo
 
 Building GPT depends on:
