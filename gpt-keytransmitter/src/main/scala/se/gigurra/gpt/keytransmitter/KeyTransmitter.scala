@@ -1,25 +1,14 @@
 package se.gigurra.gpt.keytransmitter
 
-import java.io.File
-
-import scala.collection.JavaConversions.asScalaBuffer
-
-import com.sun.jna.platform.win32.Kernel32
-import com.sun.jna.platform.win32.User32
-import com.sun.jna.platform.win32.WinDef.LRESULT
-import com.sun.jna.platform.win32.WinDef.WPARAM
-import com.sun.jna.platform.win32.WinUser.KBDLLHOOKSTRUCT
-import com.sun.jna.platform.win32.WinUser.LowLevelKeyboardProc
-import com.sun.jna.platform.win32.WinUser.MSG
-import com.sun.jna.platform.win32.WinUser.WH_KEYBOARD_LL
-
+import com.sun.jna.platform.win32.{Kernel32, User32}
+import com.sun.jna.platform.win32.WinDef.{LRESULT, WPARAM}
+import com.sun.jna.platform.win32.WinUser.{KBDLLHOOKSTRUCT, LowLevelKeyboardProc, MSG, WH_KEYBOARD_LL}
 import se.culvertsoft.mnet.client.MNetClient
-import se.gigurra.gpt.common.NetworkNames
-import se.gigurra.gpt.common.ReadConfigFile
-import se.gigurra.gpt.common.SaveConfigFile
-import se.gigurra.gpt.common.Serializer
+import se.gigurra.gpt.common.{NetworkNames, ReadConfigFile, SaveConfigFile, Serializer}
 import se.gigurra.gpt.model.keys.common.KeyMessage
 import se.gigurra.gpt.model.keys.transmitter.KeyTransmitterCfg
+
+import scala.collection.JavaConversions.asScalaBuffer
 
 object KeyTransmitter {
 
@@ -55,31 +44,31 @@ object KeyTransmitter {
         return User32.INSTANCE.CallNextHookEx(null, nCode, wPar, lp.getPointer())
       }
 
-    };
+    }
 
-    val hModule = Kernel32.INSTANCE.GetModuleHandle(null);
-    val hHook = User32.INSTANCE.SetWindowsHookEx(WH_KEYBOARD_LL, lpfn, hModule, 0);
+    val hModule = Kernel32.INSTANCE.GetModuleHandle(null)
+    val hHook = User32.INSTANCE.SetWindowsHookEx(WH_KEYBOARD_LL, lpfn, hModule, 0)
     if (hHook == null) {
-      System.err.println("Failed to create keyboard hook, bailing!");
+      System.err.println("Failed to create keyboard hook, bailing!")
       System.exit(1)
     }
 
-    val msg = new MSG();
+    val msg = new MSG()
     var quit = false
     while (!quit) {
-      val result = User32.INSTANCE.GetMessage(msg, null, 0, 0);
+      val result = User32.INSTANCE.GetMessage(msg, null, 0, 0)
       if (result == -1 || result == 0) {
-        System.out.println("Exiting, GetMessage returned " + result);
-        quit = true;
+        System.out.println("Exiting, GetMessage returned " + result)
+        quit = true
       } else {
-        User32.INSTANCE.TranslateMessage(msg);
-        User32.INSTANCE.DispatchMessage(msg);
+        User32.INSTANCE.TranslateMessage(msg)
+        User32.INSTANCE.DispatchMessage(msg)
       }
-      Thread.sleep(1);
+      Thread.sleep(1)
     }
 
     if (User32.INSTANCE.UnhookWindowsHookEx(hHook)) {
-      System.out.println("Unhooked");
+      System.out.println("Unhooked")
     }
 
     System.exit(0)

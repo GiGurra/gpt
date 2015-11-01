@@ -1,17 +1,13 @@
 package se.gigurra.gpt.shmreceiver
 
-import scala.collection.mutable.HashMap
-
-import se.culvertsoft.mnet.Message
-import se.culvertsoft.mnet.NodeSettings
-import se.culvertsoft.mnet.api.Connection
-import se.culvertsoft.mnet.api.Route
+import se.culvertsoft.mnet.{Message, NodeSettings}
+import se.culvertsoft.mnet.api.{Connection, Route}
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
-import se.gigurra.gpt.common.NetworkNames
-import se.gigurra.gpt.common.Serializer
-import se.gigurra.gpt.common.SharedMemory
+import se.gigurra.gpt.common.{NetworkNames, Serializer, SharedMemory}
 import se.gigurra.gpt.model.shm.common.ShmMsg
+
+import scala.collection.mutable.HashMap
 
 object ShmReceiver {
 

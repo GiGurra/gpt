@@ -3,24 +3,17 @@ package se.gigurra.gpt.displaysreceiver
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.JavaConversions.bufferAsJavaList
-import scala.collection.mutable.ArrayBuffer
-
 import org.libjpegturbo.turbojpeg.TJDecompressor
-
-import se.culvertsoft.mnet.Message
-import se.culvertsoft.mnet.NodeSettings
-import se.culvertsoft.mnet.api.Connection
-import se.culvertsoft.mnet.api.Route
+import se.culvertsoft.mnet.{Message, NodeSettings}
+import se.culvertsoft.mnet.api.{Connection, Route}
 import se.culvertsoft.mnet.backend.WebsockBackendSettings
 import se.culvertsoft.mnet.client.MNetClient
-import se.gigurra.gpt.common.NetworkNames
-import se.gigurra.gpt.common.ReadConfigFile
-import se.gigurra.gpt.common.SaveConfigFile
-import se.gigurra.gpt.common.Serializer
+import se.gigurra.gpt.common.{NetworkNames, ReadConfigFile, SaveConfigFile, Serializer}
 import se.gigurra.gpt.model.displays.common.StreamMsg
 import se.gigurra.gpt.model.displays.receiver.StreamReceiverCfg
+
+import scala.collection.JavaConversions.{asScalaBuffer, bufferAsJavaList}
+import scala.collection.mutable.ArrayBuffer
 
 object DisplaysReceiver {
 
@@ -34,10 +27,10 @@ object DisplaysReceiver {
 
   def mkBlackImg(w: Int, h: Int): BufferedImage = {
     val out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
-    for (
-      y <- 0 until h;
+    for {
+      y <- 0 until h
       x <- 0 until w
-    ) {
+    } {
       out.setRGB(x, y, 0)
     }
     out
