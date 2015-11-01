@@ -6,7 +6,12 @@ import java.nio.file.{Files, Paths}
 import com.google.common.io.ByteStreams
 import com.sun.jna.Platform
 
+import scala.collection.mutable
+import scala.util.Try
+
 object BundledNativeLibLoader {
+
+  private val loaded = new mutable.HashSet[String]
 
   def os = Platform.getOSType match {
     case Platform.WINDOWS => "windows"
@@ -20,17 +25,24 @@ object BundledNativeLibLoader {
 
   def bits = if (Platform.is64Bit) "64" else "32"
 
-  def load(lib: String): Unit = {
+  def load(lib: String): Unit = synchronized {
 
-    val fileName = s"${lib}_${os}_${bits}.${ext}"
-    val outPath = Paths.get(new File(tempDir, fileName).getAbsoluteFile.getPath)
+    if (!loaded.contains(lib)) {
+      loaded += lib
 
-    for (is <- resource.managed(getClass.getClassLoader.getResourceAsStream(fileName))) {
-      val libBytes = ByteStreams.toByteArray(is)
-      Files.write(outPath, libBytes)
+      val fileName = s"${lib}_${os}_${bits}.${ext}"
+      val outPath = Paths.get(new File(tempDir, fileName).getAbsoluteFile.getPath)
+
+      Try {
+        for (is <- resource.managed(getClass.getClassLoader.getResourceAsStream(fileName))) {
+          val libBytes = ByteStreams.toByteArray(is)
+          Files.write(outPath, libBytes)
+        }
+      }
+
+      System.load(outPath.toString)
+
     }
-
-    System.load(outPath.toString)
 
   }
 
