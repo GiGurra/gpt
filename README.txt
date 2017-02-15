@@ -40,4 +40,4 @@ This GPT release (0.3) is not guaranteed to be compatible with older versions in
 D. Help/Instructions/Howtos
 
 The best way to get help is to post in the official GPT thread in the BMS forums at:
-http://www.benchmarksims.org/forum/showthread.php?10677-Beta-Release-GPT-(cockpit-texture-extraction-remote-cockpit-control-shm-mirror)
+https://www.bmsforum.org/forum/showthread.php?10677-Beta-Release-GPT-(cockpit-texture-extraction-remote-cockpit-control-shm-mirror)
